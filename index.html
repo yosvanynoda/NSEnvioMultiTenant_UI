@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Security meta tags -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta http-equiv="X-Frame-Options" content="DENY" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <!-- CSP — tightened for production; loosen 'unsafe-inline' only if required by MUI -->
+    <meta http-equiv="Content-Security-Policy"
+          content="
+            default-src 'self';
+            script-src  'self' 'unsafe-inline';
+            style-src   'self' 'unsafe-inline' https://fonts.googleapis.com;
+            font-src    'self' https://fonts.gstatic.com data:;
+            img-src     'self' data: blob:;
+            connect-src 'self';
+            frame-src   blob:;
+            worker-src  blob:;
+            frame-ancestors 'none';
+            base-uri    'self';
+            form-action 'self';
+          " />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>NSEnvio</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
