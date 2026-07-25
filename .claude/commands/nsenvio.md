@@ -360,3 +360,15 @@ All date-bearing lists sort newest first: HBL all 6 (`fecha`), MasterBL all 6 (`
 - Despachar manifiestos
 - Security (role-based access control)
 - Finish inventory module
+
+## SQL Server → PostgreSQL migration (NSEnvioAPI) — status as of 2026-07-24
+
+Full detail in the `project_postgres_vps_migration` memory. Summary: all 581 stored procedures converted to PL/pgSQL, all `.frx` report embedded SQL converted, C# layer (`DbConnectionFactory`, `TenantResolutionMiddleware`, `AppIdentityDbContext`, plus `TenantAdminController`/`DeliveryWebhookController`/`WebhookApiKeyController`/`AppIdValidationMiddleware`) all on Npgsql. First full local-stack test run happened 2026-07-24 against local Postgres 18 (`NSMasterConfig` + `NSEnvios` databases, `localhost:5432`) — login, HBL creation, label PDFs, service invoice, and inventory purchase all verified working end-to-end. VPS hosting phase not started; remote tenant cutover not started.
+
+**Gotchas found only by actually running the converted app** (SQL compiled fine but broke at runtime):
+- PL/pgSQL functions: an unqualified column reference inside the function body that shares a name with a `RETURNS TABLE(...)` column is ambiguous — always alias tables in subqueries (`SELECT ag2.agenciaid FROM agencias ag2 WHERE ...`, not bare `agenciaid`).
+- `SUM(integer)` returns `bigint` in Postgres (T-SQL returns `int`) — cast explicitly (`::NUMERIC`) if the function's `RETURNS TABLE` declares a different numeric type.
+- Named-parameter function calls (`fn(p_x => @X)`) require an *implicit* cast between the declared param type and the bound value's type — `timestamp→date` is only an assignment cast, so a `DATE`-typed param called with a `DateTime`/`TIMESTAMPTZ` value fails "function does not exist", not a cast error.
+- **FastReport `.frx` `CommandParameter DataType` numeric codes are `NpgsqlTypes.NpgsqlDbType` values, not `System.Data.DbType`** — `9`=Integer, `19`=Text, `21`=Timestamp (verified by printing the actual enum). Nearly every report template had these miscoded (using values that happened to be `System.Data.DbType`-shaped), causing `InvalidCastException`s with bizarre target types like `LSeg`/`Money`. This was the single biggest open risk flagged since the earliest migration research and turned out to be a parameter-code bug, not an architecture problem.
+- A report's header can render fully blank (while its line-items table renders fine) if the header query's `JOIN` uses a nullable path to get required data — e.g. `ServiceInvoice.frx`/`InventoryInvoice.frx` joined `agencias` via `remitente.agenciaid` (nullable) instead of the invoice's own `agenciaid` (`NOT NULL` with its own FK). Symptom: `INNER JOIN` silently drops the header row whenever that nullable path is null.
+- `PurchaseCreate.jsx` was missing a product-picker entirely — pre-existing app bug, not migration-related — see the "Order & Purchase — ProductoInventoryID only in details" section above; it now matches `OrderCreate.jsx`'s pattern with a required `productoInventoryId` select field.

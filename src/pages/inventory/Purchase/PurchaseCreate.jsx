@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import {
   Box, Grid, Paper, Typography, TextField, Button, Alert, Snackbar, CircularProgress,
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton, Tooltip,
-  Dialog, DialogTitle, DialogContent, DialogActions, InputAdornment, Chip,
+  Dialog, DialogTitle, DialogContent, DialogActions, MenuItem, InputAdornment, Chip,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -19,6 +19,7 @@ import { ENDPOINTS } from '../../../api/endpoints';
 import PageTitle from '../../../components/common/PageTitle';
 
 const itemSchema = yup.object({
+  productoInventoryId: yup.number().min(1, 'Seleccione un producto').required('Requerido').typeError('Requerido'),
   descripcion: yup.string().required('Requerido'),
   cantidad: yup.number().min(1).required('Requerido'),
   precioUnitario: yup.number().min(0).required('Requerido'),
@@ -30,19 +31,25 @@ const formSchema = yup.object({
   nota:   yup.string().default(''),
 });
 
-function ItemModal({ open, onClose, onSave, editItem }) {
-  const { control, handleSubmit, reset, formState: { errors } } = useForm({
+function ItemModal({ open, onClose, onSave, editItem, productos }) {
+  const { control, handleSubmit, reset, setValue, formState: { errors } } = useForm({
     resolver: yupResolver(itemSchema),
-    defaultValues: { descripcion: '', cantidad: 1, precioUnitario: 0 },
+    defaultValues: { productoInventoryId: '', descripcion: '', cantidad: 1, precioUnitario: 0 },
   });
 
   useEffect(() => {
     if (open) {
       reset(editItem
-        ? { descripcion: editItem.descripcion || '', cantidad: editItem.cantidad || 1, precioUnitario: editItem.precioUnitario || 0 }
-        : { descripcion: '', cantidad: 1, precioUnitario: 0 });
+        ? { productoInventoryId: editItem.productoInventoryId || '', descripcion: editItem.descripcion || '', cantidad: editItem.cantidad || 1, precioUnitario: editItem.precioUnitario || 0 }
+        : { productoInventoryId: '', descripcion: '', cantidad: 1, precioUnitario: 0 });
     }
   }, [open, editItem, reset]);
+
+  const handleProductoChange = (e) => {
+    const id = Number(e.target.value);
+    const prod = productos.find(p => p.id === id);
+    if (prod) setValue('descripcion', prod.descripcion || '');
+  };
 
   const onSubmit = (data) => {
     onSave({ ...data, _tempId: editItem?._tempId || Date.now().toString() });
@@ -55,6 +62,15 @@ function ItemModal({ open, onClose, onSave, editItem }) {
       <form onSubmit={handleSubmit(onSubmit)}>
         <DialogContent sx={{ pt: 3 }}>
           <Grid container spacing={2}>
+            <Grid size={12}>
+              <Controller name="productoInventoryId" control={control} render={({ field }) => (
+                <TextField {...field} label="Producto *" fullWidth select error={Boolean(errors.productoInventoryId)} helperText={errors.productoInventoryId?.message}
+                  onChange={e => { field.onChange(Number(e.target.value)); handleProductoChange(e); }}>
+                  <MenuItem value=""><em>Seleccione...</em></MenuItem>
+                  {productos.map(p => <MenuItem key={p.id} value={p.id}>{p.descripcion}</MenuItem>)}
+                </TextField>
+              )} />
+            </Grid>
             <Grid size={12}>
               <Controller name="descripcion" control={control} render={({ field }) => (
                 <TextField {...field} label="Descripción *" fullWidth error={Boolean(errors.descripcion)} helperText={errors.descripcion?.message} />
@@ -92,11 +108,22 @@ export default function PurchaseCreate() {
   const [saving, setSaving] = useState(false);
   const [loadingData, setLoadingData] = useState(isEdit);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
+  const [productos, setProductos] = useState([]);
 
   const { control, handleSubmit, reset, formState: { errors } } = useForm({
     resolver: yupResolver(formSchema),
     defaultValues: { fecha: dayjs().format('YYYY-MM-DD'), numero: '', nota: '' },
   });
+
+  useEffect(() => {
+    apiClient.get(ENDPOINTS.PRODUCTO_INVENTORY).then(res => {
+      const list = res.data?.data || res.data || [];
+      setProductos(list.map(p => ({
+        id: p.productoInventoryID,
+        descripcion: p.productoInventoryName,
+      })));
+    }).catch(() => {});
+  }, []);
 
   useEffect(() => {
     if (isEdit) {
@@ -106,6 +133,7 @@ export default function PurchaseCreate() {
           reset({ fecha: d.purchaseDate ? dayjs(d.purchaseDate).format('YYYY-MM-DD') : dayjs().format('YYYY-MM-DD'), numero: d.purchaseNumber || '', nota: d.purchaseName || '' });
           setItems((d.details || d.items || d.detalle || []).map(it => ({
             purchaseDetailID: it.purchaseDetailID || it.purchasedetailid || 0,
+            productoInventoryId: it.productoInventoryID || it.productoinventoryid || 0,
             descripcion: it.productoInventoryName || it.descripcion || '',
             cantidad: it.quantity || it.cantidad || 1,
             precioUnitario: it.purchasePrice || it.precioUnitario || 0,
@@ -145,6 +173,7 @@ export default function PurchaseCreate() {
           purchaseDetailID: it.purchaseDetailID || 0,
           quantity: Number(it.cantidad),
           purchasePrice: Number(it.precioUnitario),
+          productoInventoryID: Number(it.productoInventoryId),
         })),
       };
       let savedId;
@@ -257,7 +286,7 @@ export default function PurchaseCreate() {
         </Box>
       </form>
 
-      <ItemModal open={itemModalOpen} onClose={() => setItemModalOpen(false)} onSave={handleSaveItem} editItem={editItem} />
+      <ItemModal open={itemModalOpen} onClose={() => setItemModalOpen(false)} onSave={handleSaveItem} editItem={editItem} productos={productos} />
       <Snackbar open={snackbar.open} autoHideDuration={4000} onClose={() => setSnackbar(s => ({ ...s, open: false }))} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
         <Alert severity={snackbar.severity} onClose={() => setSnackbar(s => ({ ...s, open: false }))}>{snackbar.message}</Alert>
       </Snackbar>
