@@ -33,13 +33,6 @@ export default function TipoEnvioIndex() {
   }, [data, search]);
 
   const columns = [
-    { field: 'tipoEnvioName', headerName: 'Nombre', flex: 1, minWidth: 200 },
-    { field: 'envioActual', headerName: 'Envío Actual', width: 150 },
-    { field: 'companyName', headerName: 'Compañía', width: 150 },
-    {
-      field: 'isActive', headerName: 'Estado', width: 100,
-      renderCell: (params) => <Chip label={params.value ? 'Activo' : 'Inactivo'} color={params.value ? 'success' : 'default'} size="small" />,
-    },
     {
       field: 'actions', headerName: 'Acciones', width: 80, sortable: false,
       renderCell: (params) => (
@@ -47,6 +40,13 @@ export default function TipoEnvioIndex() {
           <Tooltip title="Editar"><IconButton size="small" color="primary" onClick={() => navigate(`/administration/tipoenvio/edit/${params.row.tipoEnvioID}`)}><EditIcon fontSize="small" /></IconButton></Tooltip>
         </Box>
       ),
+    },
+    { field: 'tipoEnvioName', headerName: 'Nombre', flex: 1, minWidth: 200 },
+    { field: 'envioActual', headerName: 'Envío Actual', width: 150 },
+    { field: 'companyName', headerName: 'Compañía', width: 150 },
+    {
+      field: 'isActive', headerName: 'Estado', width: 100,
+      renderCell: (params) => <Chip label={params.value ? 'Activo' : 'Inactivo'} color={params.value ? 'success' : 'default'} size="small" />,
     },
   ];
 

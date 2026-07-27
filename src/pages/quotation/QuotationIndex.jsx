@@ -61,6 +61,17 @@ export default function QuotationIndex() {
   }, [data, search]);
 
   const columns = [
+    {
+      field: 'actions', headerName: 'Acciones', width: 160, sortable: false,
+      renderCell: (params) => (
+        <Box>
+          <Tooltip title="Editar"><IconButton size="small" color="primary" onClick={() => navigate(`/quotation/edit/${params.row.quotationID}`)}><EditIcon fontSize="small" /></IconButton></Tooltip>
+          <Tooltip title="Duplicar"><IconButton size="small" color="secondary" onClick={() => handleDuplicate(params.row.quotationID)}><ContentCopyIcon fontSize="small" /></IconButton></Tooltip>
+          <Tooltip title="Imprimir"><IconButton size="small" color="info" onClick={() => handlePrint(params.row.quotationID)}><PrintIcon fontSize="small" /></IconButton></Tooltip>
+          {canCancel && <Tooltip title="Eliminar"><IconButton size="small" color="error" onClick={() => setDeleteId(params.row.quotationID)}><DeleteIcon fontSize="small" /></IconButton></Tooltip>}
+        </Box>
+      ),
+    },
     { field: 'quotationNumber', headerName: 'Número', width: 130 },
     {
       field: 'quotationDate',
@@ -76,17 +87,6 @@ export default function QuotationIndex() {
       width: 90,
       renderCell: ({ value }) => (
         <Chip label={value ? 'Activo' : 'Inactivo'} color={value ? 'success' : 'default'} size="small" />
-      ),
-    },
-    {
-      field: 'actions', headerName: 'Acciones', width: 160, sortable: false,
-      renderCell: (params) => (
-        <Box>
-          <Tooltip title="Editar"><IconButton size="small" color="primary" onClick={() => navigate(`/quotation/edit/${params.row.quotationID}`)}><EditIcon fontSize="small" /></IconButton></Tooltip>
-          <Tooltip title="Duplicar"><IconButton size="small" color="secondary" onClick={() => handleDuplicate(params.row.quotationID)}><ContentCopyIcon fontSize="small" /></IconButton></Tooltip>
-          <Tooltip title="Imprimir"><IconButton size="small" color="info" onClick={() => handlePrint(params.row.quotationID)}><PrintIcon fontSize="small" /></IconButton></Tooltip>
-          {canCancel && <Tooltip title="Eliminar"><IconButton size="small" color="error" onClick={() => setDeleteId(params.row.quotationID)}><DeleteIcon fontSize="small" /></IconButton></Tooltip>}
-        </Box>
       ),
     },
   ];

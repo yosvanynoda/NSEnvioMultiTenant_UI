@@ -63,6 +63,16 @@ export default function OrderIndex() {
   };
 
   const columns = [
+    {
+      field: 'actions', headerName: 'Acciones', width: 130, sortable: false,
+      renderCell: (params) => (
+        <Box>
+          <Tooltip title="Editar"><IconButton size="small" color="primary" onClick={() => navigate(`/inventory/order/edit/${params.row.orderID}`)}><EditIcon fontSize="small" /></IconButton></Tooltip>
+          <Tooltip title="Imprimir"><IconButton size="small" color="info" onClick={() => handlePrint(params.row.orderID)}><PrintIcon fontSize="small" /></IconButton></Tooltip>
+          {canCancel && <Tooltip title="Eliminar"><IconButton size="small" color="error" onClick={() => setDeleteId(params.row.orderID)}><DeleteIcon fontSize="small" /></IconButton></Tooltip>}
+        </Box>
+      ),
+    },
     { field: 'orderNumber',   headerName: 'Número',     width: 120 },
     { field: 'orderDate',     headerName: 'Fecha',      width: 110, valueFormatter: (v) => v ? dayjs(v).format('MM/DD/YYYY') : '—' },
     { field: 'remitenteName', headerName: 'Remitente',  flex: 1, minWidth: 180 },
@@ -79,16 +89,6 @@ export default function OrderIndex() {
     {
       field: 'isActive', headerName: 'Estado', width: 90,
       renderCell: (params) => <Chip label={params.value ? 'Activo' : 'Inactivo'} color={params.value ? 'success' : 'default'} size="small" />,
-    },
-    {
-      field: 'actions', headerName: 'Acciones', width: 130, sortable: false,
-      renderCell: (params) => (
-        <Box>
-          <Tooltip title="Editar"><IconButton size="small" color="primary" onClick={() => navigate(`/inventory/order/edit/${params.row.orderID}`)}><EditIcon fontSize="small" /></IconButton></Tooltip>
-          <Tooltip title="Imprimir"><IconButton size="small" color="info" onClick={() => handlePrint(params.row.orderID)}><PrintIcon fontSize="small" /></IconButton></Tooltip>
-          {canCancel && <Tooltip title="Eliminar"><IconButton size="small" color="error" onClick={() => setDeleteId(params.row.orderID)}><DeleteIcon fontSize="small" /></IconButton></Tooltip>}
-        </Box>
-      ),
     },
   ];
 

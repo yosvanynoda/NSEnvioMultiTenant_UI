@@ -129,15 +129,6 @@ export default function StorageIndex() {
   }, [data, search]);
 
   const columns = [
-    { field: 'sucursalName',   headerName: 'Franquicia', flex: 1, minWidth: 140 },
-    { field: 'warehouseName',  headerName: 'Almacén',  flex: 1, minWidth: 160 },
-    { field: 'storageRow',     headerName: 'Fila',     width: 100 },
-    { field: 'storageSection', headerName: 'Sección',  width: 110 },
-    { field: 'storageBin',     headerName: 'Bin',      width: 100 },
-    {
-      field: 'isActive', headerName: 'Estado', width: 100,
-      renderCell: ({ value }) => <Chip label={value ? 'Activo' : 'Inactivo'} color={value ? 'success' : 'default'} size="small" />,
-    },
     {
       field: 'actions', headerName: 'Acciones', width: 110, sortable: false,
       renderCell: ({ row }) => (
@@ -146,6 +137,15 @@ export default function StorageIndex() {
           <Tooltip title="Eliminar"><IconButton size="small" color="error" onClick={() => setDeleteId(row.storageID)}><DeleteIcon fontSize="small" /></IconButton></Tooltip>
         </Box>
       ),
+    },
+    { field: 'sucursalName',   headerName: 'Franquicia', flex: 1, minWidth: 140 },
+    { field: 'warehouseName',  headerName: 'Almacén',  flex: 1, minWidth: 160 },
+    { field: 'storageRow',     headerName: 'Fila',     width: 100 },
+    { field: 'storageSection', headerName: 'Sección',  width: 110 },
+    { field: 'storageBin',     headerName: 'Bin',      width: 100 },
+    {
+      field: 'isActive', headerName: 'Estado', width: 100,
+      renderCell: ({ value }) => <Chip label={value ? 'Activo' : 'Inactivo'} color={value ? 'success' : 'default'} size="small" />,
     },
   ];
 

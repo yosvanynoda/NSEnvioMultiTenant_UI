@@ -56,15 +56,6 @@ export default function ProductoInventoryIndex() {
   }, [data, search]);
 
   const columns = [
-    { field: 'productoInventoryName', headerName: 'Nombre', flex: 1, minWidth: 200 },
-    { field: 'retailPrice', headerName: 'Precio Venta', width: 130, align: 'right', headerAlign: 'right', valueFormatter: (v) => v != null ? `$${Number(v).toFixed(2)}` : '—' },
-    { field: 'weight', headerName: 'Peso', width: 100 },
-    { field: 'minInventory', headerName: 'Inv.Min', width: 100 },
-    { field: 'maxInventory', headerName: 'Inv.Max', width: 100 },
-    {
-      field: 'isActive', headerName: 'Estado', width: 100,
-      renderCell: (params) => <Chip label={params.value ? 'Activo' : 'Inactivo'} color={params.value ? 'success' : 'default'} size="small" />,
-    },
     {
       field: 'actions', headerName: 'Acciones', width: 110, sortable: false,
       renderCell: (params) => (
@@ -73,6 +64,15 @@ export default function ProductoInventoryIndex() {
           <Tooltip title="Eliminar"><IconButton size="small" color="error" onClick={() => setDeleteId(params.row.productoInventoryID)}><DeleteIcon fontSize="small" /></IconButton></Tooltip>
         </Box>
       ),
+    },
+    { field: 'productoInventoryName', headerName: 'Nombre', flex: 1, minWidth: 200 },
+    { field: 'retailPrice', headerName: 'Precio Venta', width: 130, align: 'right', headerAlign: 'right', valueFormatter: (v) => v != null ? `$${Number(v).toFixed(2)}` : '—' },
+    { field: 'weight', headerName: 'Peso', width: 100 },
+    { field: 'minInventory', headerName: 'Inv.Min', width: 100 },
+    { field: 'maxInventory', headerName: 'Inv.Max', width: 100 },
+    {
+      field: 'isActive', headerName: 'Estado', width: 100,
+      renderCell: (params) => <Chip label={params.value ? 'Activo' : 'Inactivo'} color={params.value ? 'success' : 'default'} size="small" />,
     },
   ];
 

@@ -58,6 +58,23 @@ export default function AgenciaInvoiceFormulaIndex() {
   }, [data, search]);
 
   const columns = [
+    {
+      field: 'actions', headerName: 'Acciones', width: 100, sortable: false,
+      renderCell: (p) => (
+        <Box>
+          <Tooltip title="Editar">
+            <IconButton size="small" color="primary" onClick={() => setEditDialog({ open: true, formulaID: p.row.formulaID })}>
+              <EditIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Eliminar">
+            <IconButton size="small" color="error" onClick={() => setDeleteId(p.row.formulaID)}>
+              <DeleteIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </Box>
+      ),
+    },
     { field: 'childSucursalName', headerName: 'Franquicia', flex: 1, minWidth: 140 },
     { field: 'tipoEnvioName', headerName: 'Tipo Envío', flex: 1, minWidth: 120 },
     {
@@ -89,23 +106,6 @@ export default function AgenciaInvoiceFormulaIndex() {
       field: 'isActive', headerName: 'Estado', width: 100,
       renderCell: (p) => (
         <Chip label={p.value ? 'Activo' : 'Inactivo'} color={p.value ? 'success' : 'default'} size="small" />
-      ),
-    },
-    {
-      field: 'actions', headerName: 'Acciones', width: 100, sortable: false,
-      renderCell: (p) => (
-        <Box>
-          <Tooltip title="Editar">
-            <IconButton size="small" color="primary" onClick={() => setEditDialog({ open: true, formulaID: p.row.formulaID })}>
-              <EditIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Eliminar">
-            <IconButton size="small" color="error" onClick={() => setDeleteId(p.row.formulaID)}>
-              <DeleteIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-        </Box>
       ),
     },
   ];

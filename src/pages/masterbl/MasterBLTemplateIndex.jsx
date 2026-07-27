@@ -56,7 +56,6 @@ export default function MasterBLTemplateIndex() {
   }, [data, search]);
 
   const columns = [
-    { field: 'masterBLTemplateName', headerName: 'Nombre del Template', flex: 1, minWidth: 200 },
     {
       field: 'actions',
       headerName: 'Acciones',
@@ -85,6 +84,7 @@ export default function MasterBLTemplateIndex() {
         </Box>
       ),
     },
+    { field: 'masterBLTemplateName', headerName: 'Nombre del Template', flex: 1, minWidth: 200 },
   ];
 
   return (

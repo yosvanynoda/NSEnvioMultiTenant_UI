@@ -722,14 +722,6 @@ export default function ContenedorCreate({ hblType = 'aereo', editMode = false }
   };
 
   const scannedColumns = [
-    { field: 'numero',           headerName: 'Numero',   width: 130 },
-    { field: 'bultoNumero',      headerName: 'Bulto',    width: 70 },
-    { field: 'totalBultos',      headerName: 'Total B.', width: 80 },
-    { field: 'remitenteName',    headerName: 'Envia',    flex: 1, minWidth: 130 },
-    { field: 'destinatarioName', headerName: 'Recibe',   flex: 1, minWidth: 130 },
-    { field: 'producto',         headerName: 'Producto', flex: 1, minWidth: 130 },
-    { field: 'peso',             headerName: 'Peso',     width: 80, valueFormatter: v => Number(v).toFixed(2) },
-    { field: 'cantidad',         headerName: 'Cantidad', width: 90 },
     {
       field: 'actions',
       headerName: '',
@@ -744,12 +736,17 @@ export default function ContenedorCreate({ hblType = 'aereo', editMode = false }
         </Tooltip>
       ),
     },
+    { field: 'numero',           headerName: 'Numero',   width: 130 },
+    { field: 'bultoNumero',      headerName: 'Bulto',    width: 70 },
+    { field: 'totalBultos',      headerName: 'Total B.', width: 80 },
+    { field: 'remitenteName',    headerName: 'Envia',    flex: 1, minWidth: 130 },
+    { field: 'destinatarioName', headerName: 'Recibe',   flex: 1, minWidth: 130 },
+    { field: 'producto',         headerName: 'Producto', flex: 1, minWidth: 130 },
+    { field: 'peso',             headerName: 'Peso',     width: 80, valueFormatter: v => Number(v).toFixed(2) },
+    { field: 'cantidad',         headerName: 'Cantidad', width: 90 },
   ];
 
   const erroresColumns = [
-    { field: 'numero',      headerName: 'Numero',  width: 160 },
-    { field: 'bultoNumero', headerName: 'Bulto',   width: 70 },
-    { field: 'reason',      headerName: 'Razón',   flex: 1 },
     {
       field: 'actions',
       headerName: 'Acciones',
@@ -772,6 +769,9 @@ export default function ContenedorCreate({ hblType = 'aereo', editMode = false }
         </Box>
       ),
     },
+    { field: 'numero',      headerName: 'Numero',  width: 160 },
+    { field: 'bultoNumero', headerName: 'Bulto',   width: 70 },
+    { field: 'reason',      headerName: 'Razón',   flex: 1 },
   ];
 
   if (loadingEdit) return <CircularProgress sx={{ m: 4 }} />;

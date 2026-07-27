@@ -217,15 +217,6 @@ export default function ProductoInventarioPrecioIndex() {
   }, [productos, search]);
 
   const columns = useMemo(() => [
-    { field: 'productoInventoryName', headerName: 'Producto', flex: 1, minWidth: 200 },
-    {
-      field: 'isActive',
-      headerName: 'Estado',
-      width: 100,
-      renderCell: ({ value }) => (
-        <Chip label={value ? 'Activo' : 'Inactivo'} color={value ? 'success' : 'default'} size="small" />
-      ),
-    },
     {
       field: 'actions',
       headerName: 'Precios',
@@ -240,6 +231,15 @@ export default function ProductoInventarioPrecioIndex() {
         >
           Configurar
         </Button>
+      ),
+    },
+    { field: 'productoInventoryName', headerName: 'Producto', flex: 1, minWidth: 200 },
+    {
+      field: 'isActive',
+      headerName: 'Estado',
+      width: 100,
+      renderCell: ({ value }) => (
+        <Chip label={value ? 'Activo' : 'Inactivo'} color={value ? 'success' : 'default'} size="small" />
       ),
     },
   ], [openPrecioPanel]);

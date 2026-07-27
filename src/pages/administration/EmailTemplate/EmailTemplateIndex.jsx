@@ -238,6 +238,23 @@ export default function EmailTemplateIndex() {
 
   const columns = [
     {
+      field: 'actions', headerName: 'Acciones', width: 100, sortable: false,
+      renderCell: ({ row }) => (
+        <Box>
+          <Tooltip title="Editar">
+            <IconButton size="small" color="primary" onClick={() => openEdit(row)}>
+              <EditIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Eliminar">
+            <IconButton size="small" color="error" onClick={() => setDeleteId(row.emailTemplateID)}>
+              <DeleteIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </Box>
+      ),
+    },
+    {
       field: 'templateName', headerName: 'Nombre', flex: 1, minWidth: 180,
     },
     {
@@ -256,23 +273,6 @@ export default function EmailTemplateIndex() {
       ),
     },
     { field: 'createdBy', headerName: 'Creado por', width: 130 },
-    {
-      field: 'actions', headerName: 'Acciones', width: 100, sortable: false,
-      renderCell: ({ row }) => (
-        <Box>
-          <Tooltip title="Editar">
-            <IconButton size="small" color="primary" onClick={() => openEdit(row)}>
-              <EditIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Eliminar">
-            <IconButton size="small" color="error" onClick={() => setDeleteId(row.emailTemplateID)}>
-              <DeleteIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-        </Box>
-      ),
-    },
   ];
 
   return (

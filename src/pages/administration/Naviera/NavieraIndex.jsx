@@ -53,14 +53,6 @@ export default function NavieraIndex() {
   }, [data, search]);
 
   const columns = [
-    { field: 'navieraName', headerName: 'Nombre', flex: 1, minWidth: 200 },
-    { field: 'address', headerName: 'Dirección', flex: 1, minWidth: 220 },
-    { field: 'phone', headerName: 'Teléfono', width: 140 },
-    { field: 'contactPerson', headerName: 'Persona de Contacto', width: 180 },
-    {
-      field: 'isActive', headerName: 'Estado', width: 100,
-      renderCell: (params) => <Chip label={params.value ? 'Activo' : 'Inactivo'} color={params.value ? 'success' : 'default'} size="small" />,
-    },
     {
       field: 'actions', headerName: 'Acciones', width: 100, sortable: false,
       renderCell: (params) => (
@@ -69,6 +61,14 @@ export default function NavieraIndex() {
           <Tooltip title="Eliminar"><IconButton size="small" color="error" onClick={() => setDeleteId(params.row.navieraID)}><DeleteIcon fontSize="small" /></IconButton></Tooltip>
         </Box>
       ),
+    },
+    { field: 'navieraName', headerName: 'Nombre', flex: 1, minWidth: 200 },
+    { field: 'address', headerName: 'Dirección', flex: 1, minWidth: 220 },
+    { field: 'phone', headerName: 'Teléfono', width: 140 },
+    { field: 'contactPerson', headerName: 'Persona de Contacto', width: 180 },
+    {
+      field: 'isActive', headerName: 'Estado', width: 100,
+      renderCell: (params) => <Chip label={params.value ? 'Activo' : 'Inactivo'} color={params.value ? 'success' : 'default'} size="small" />,
     },
   ];
 

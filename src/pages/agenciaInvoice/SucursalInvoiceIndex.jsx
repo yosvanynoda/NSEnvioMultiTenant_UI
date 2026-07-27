@@ -64,25 +64,6 @@ export default function SucursalInvoiceIndex({ hblType }) {
   }, [data, search]);
 
   const columns = [
-    { field: 'invoiceNumber', headerName: 'N° Factura', width: 200 },
-    { field: 'childSucursalName', headerName: 'Franquicia', flex: 1, minWidth: 140 },
-    { field: 'tipoEnvioName', headerName: 'Tipo Envío', width: 130 },
-    {
-      field: 'fecha', headerName: 'Fecha', width: 110,
-      valueFormatter: (v) => v ? new Date(v).toLocaleDateString('en-US') : '—',
-    },
-    {
-      field: 'totalAmount', headerName: 'Total', width: 120,
-      align: 'right', headerAlign: 'right',
-      valueFormatter: (v) => v != null ? `$${Number(v).toFixed(2)}` : '—',
-    },
-    {
-      field: 'isActive', headerName: 'Estado', width: 100,
-      renderCell: (p) => (
-        <Chip label={p.value ? 'Activo' : 'Inactivo'} color={p.value ? 'success' : 'default'} size="small" />
-      ),
-    },
-    { field: 'createdBy', headerName: 'Creado por', width: 130 },
     {
       field: 'actions', headerName: 'Acciones', width: 100, sortable: false,
       renderCell: (p) => (
@@ -104,6 +85,25 @@ export default function SucursalInvoiceIndex({ hblType }) {
         </Box>
       ),
     },
+    { field: 'invoiceNumber', headerName: 'N° Factura', width: 200 },
+    { field: 'childSucursalName', headerName: 'Franquicia', flex: 1, minWidth: 140 },
+    { field: 'tipoEnvioName', headerName: 'Tipo Envío', width: 130 },
+    {
+      field: 'fecha', headerName: 'Fecha', width: 110,
+      valueFormatter: (v) => v ? new Date(v).toLocaleDateString('en-US') : '—',
+    },
+    {
+      field: 'totalAmount', headerName: 'Total', width: 120,
+      align: 'right', headerAlign: 'right',
+      valueFormatter: (v) => v != null ? `$${Number(v).toFixed(2)}` : '—',
+    },
+    {
+      field: 'isActive', headerName: 'Estado', width: 100,
+      renderCell: (p) => (
+        <Chip label={p.value ? 'Activo' : 'Inactivo'} color={p.value ? 'success' : 'default'} size="small" />
+      ),
+    },
+    { field: 'createdBy', headerName: 'Creado por', width: 130 },
   ];
 
   const label = HBL_TYPE_LABELS[hblType] ?? hblType;

@@ -108,6 +108,26 @@ export default function SucursalIndex() {
 
   const columns = [
     {
+      field: 'actions',
+      headerName: 'Acciones',
+      width: 110,
+      sortable: false,
+      renderCell: ({ row }) => (
+        <Box>
+          <Tooltip title="Editar">
+            <IconButton size="small" color="primary" onClick={() => navigate(`/administration/sucursal/edit/${row.sucursalID}`)}>
+              <EditIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Eliminar">
+            <IconButton size="small" color="error" onClick={() => handleDeleteClick(row.sucursalID)}>
+              <DeleteIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </Box>
+      ),
+    },
+    {
       field: 'sucursalName',
       headerName: 'Nombre',
       flex: 1,
@@ -143,26 +163,6 @@ export default function SucursalIndex() {
       width: 100,
       renderCell: ({ value }) =>
         <Chip label={value ? 'Activo' : 'Inactivo'} color={value ? 'success' : 'default'} size="small" />,
-    },
-    {
-      field: 'actions',
-      headerName: 'Acciones',
-      width: 110,
-      sortable: false,
-      renderCell: ({ row }) => (
-        <Box>
-          <Tooltip title="Editar">
-            <IconButton size="small" color="primary" onClick={() => navigate(`/administration/sucursal/edit/${row.sucursalID}`)}>
-              <EditIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Eliminar">
-            <IconButton size="small" color="error" onClick={() => handleDeleteClick(row.sucursalID)}>
-              <DeleteIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-        </Box>
-      ),
     },
   ];
 

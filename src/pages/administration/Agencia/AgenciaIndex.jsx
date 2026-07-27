@@ -52,6 +52,26 @@ export default function AgenciaIndex() {
   }, [data, search]);
 
   const columns = [
+    {
+      field: 'actions',
+      headerName: 'Acciones',
+      width: 110,
+      sortable: false,
+      renderCell: (params) => (
+        <Box>
+          <Tooltip title="Editar">
+            <IconButton size="small" color="primary" onClick={() => navigate(`/administration/agencia/edit/${params.row.agenciaID}`)}>
+              <EditIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Eliminar">
+            <IconButton size="small" color="error" onClick={() => setDeleteId(params.row.agenciaID)}>
+              <DeleteIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </Box>
+      ),
+    },
     { field: 'agenciaName', headerName: 'Nombre', flex: 1, minWidth: 180 },
     { field: 'agenciaSigla', headerName: 'Sigla', width: 80 },
     { field: 'sucursalName', headerName: 'Franquicia', width: 160, valueFormatter: (value) => value || '—' },
@@ -73,26 +93,6 @@ export default function AgenciaIndex() {
       width: 100,
       renderCell: (params) => (
         <Chip label={params.value ? 'Activo' : 'Inactivo'} color={params.value ? 'success' : 'default'} size="small" />
-      ),
-    },
-    {
-      field: 'actions',
-      headerName: 'Acciones',
-      width: 110,
-      sortable: false,
-      renderCell: (params) => (
-        <Box>
-          <Tooltip title="Editar">
-            <IconButton size="small" color="primary" onClick={() => navigate(`/administration/agencia/edit/${params.row.agenciaID}`)}>
-              <EditIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Eliminar">
-            <IconButton size="small" color="error" onClick={() => setDeleteId(params.row.agenciaID)}>
-              <DeleteIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-        </Box>
       ),
     },
   ];

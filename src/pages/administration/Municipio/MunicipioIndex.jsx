@@ -31,6 +31,14 @@ export default function MunicipioIndex() {
   }, [data, search]);
 
   const columns = [
+    {
+      field: 'actions', headerName: 'Acciones', width: 80, sortable: false,
+      renderCell: (params) => (
+        <Box>
+          <Tooltip title="Editar"><IconButton size="small" color="primary" onClick={() => navigate(`/administration/municipio/edit/${params.row.municipioID}`)}><EditIcon fontSize="small" /></IconButton></Tooltip>
+        </Box>
+      ),
+    },
     { field: 'municipioName', headerName: 'Nombre', flex: 1, minWidth: 200 },
     { field: 'provinciaName', headerName: 'Provincia', width: 150 },
     { field: 'codigoCubaPack', headerName: 'Cód.CP', width: 110 },
@@ -39,14 +47,6 @@ export default function MunicipioIndex() {
     {
       field: 'isActive', headerName: 'Estado', width: 100,
       renderCell: (params) => <Chip label={params.value ? 'Activo' : 'Inactivo'} color={params.value ? 'success' : 'default'} size="small" />,
-    },
-    {
-      field: 'actions', headerName: 'Acciones', width: 80, sortable: false,
-      renderCell: (params) => (
-        <Box>
-          <Tooltip title="Editar"><IconButton size="small" color="primary" onClick={() => navigate(`/administration/municipio/edit/${params.row.municipioID}`)}><EditIcon fontSize="small" /></IconButton></Tooltip>
-        </Box>
-      ),
     },
   ];
 

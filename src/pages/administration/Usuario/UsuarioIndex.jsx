@@ -68,6 +68,15 @@ export default function UsuarioIndex() {
 
   const columns = [
     {
+      field: 'actions', headerName: 'Acciones', width: 110, sortable: false,
+      renderCell: (params) => (
+        <Box>
+          <Tooltip title="Editar"><IconButton size="small" color="primary" onClick={() => navigate(`/administration/usuario/edit/${params.row.id}`)}><EditIcon fontSize="small" /></IconButton></Tooltip>
+          <Tooltip title="Eliminar"><IconButton size="small" color="error" onClick={() => setDeleteId(params.row.id)}><DeleteIcon fontSize="small" /></IconButton></Tooltip>
+        </Box>
+      ),
+    },
+    {
       field: 'firstName', headerName: 'Nombre', flex: 1, width: 150,
       renderCell: (params) => [params.row.firstName, params.row.lastName].filter(Boolean).join(' ') || '—',
     },
@@ -84,15 +93,6 @@ export default function UsuarioIndex() {
     {
       field: 'isActive', headerName: 'Estado', width: 100,
       renderCell: (params) => <Chip label={params.value ? 'Activo' : 'Inactivo'} color={params.value ? 'success' : 'default'} size="small" />,
-    },
-    {
-      field: 'actions', headerName: 'Acciones', width: 110, sortable: false,
-      renderCell: (params) => (
-        <Box>
-          <Tooltip title="Editar"><IconButton size="small" color="primary" onClick={() => navigate(`/administration/usuario/edit/${params.row.id}`)}><EditIcon fontSize="small" /></IconButton></Tooltip>
-          <Tooltip title="Eliminar"><IconButton size="small" color="error" onClick={() => setDeleteId(params.row.id)}><DeleteIcon fontSize="small" /></IconButton></Tooltip>
-        </Box>
-      ),
     },
   ];
 

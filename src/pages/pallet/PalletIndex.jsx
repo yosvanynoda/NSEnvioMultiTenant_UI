@@ -72,20 +72,6 @@ export default function PalletIndex({ hblType }) {
   }, [data, search]);
 
   const columns = [
-    { field: 'palletID', headerName: '#', width: 70 },
-    { field: 'palletNumber', headerName: 'Número', width: 150 },
-    { field: 'palletDescription', headerName: 'Descripción', flex: 1, minWidth: 180 },
-    { field: 'almacen', headerName: 'Almacén', width: 150 },
-    { field: 'fila', headerName: 'Fila', width: 90 },
-    { field: 'seccion', headerName: 'Sección', width: 100 },
-    { field: 'bin', headerName: 'Bin', width: 90 },
-    {
-      field: 'isActive', headerName: 'Estado', width: 100,
-      renderCell: ({ value }) => (
-        <Chip label={value ? 'Activo' : 'Inactivo'} color={value ? 'success' : 'default'} size="small" />
-      ),
-    },
-    { field: 'createdBy', headerName: 'Creado por', width: 130 },
     {
       field: 'actions', headerName: 'Acciones', width: 140, sortable: false,
       renderCell: ({ row }) => (
@@ -108,6 +94,20 @@ export default function PalletIndex({ hblType }) {
         </Box>
       ),
     },
+    { field: 'palletID', headerName: '#', width: 70 },
+    { field: 'palletNumber', headerName: 'Número', width: 150 },
+    { field: 'palletDescription', headerName: 'Descripción', flex: 1, minWidth: 180 },
+    { field: 'almacen', headerName: 'Almacén', width: 150 },
+    { field: 'fila', headerName: 'Fila', width: 90 },
+    { field: 'seccion', headerName: 'Sección', width: 100 },
+    { field: 'bin', headerName: 'Bin', width: 90 },
+    {
+      field: 'isActive', headerName: 'Estado', width: 100,
+      renderCell: ({ value }) => (
+        <Chip label={value ? 'Activo' : 'Inactivo'} color={value ? 'success' : 'default'} size="small" />
+      ),
+    },
+    { field: 'createdBy', headerName: 'Creado por', width: 130 },
   ];
 
   return (

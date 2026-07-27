@@ -153,6 +153,28 @@ export default function TenantAdminIndex() {
     setForm((f) => ({ ...f, settings: { ...f.settings, [key]: val } }));
 
   const columns = [
+    {
+      field: 'actions', headerName: '', width: 110, sortable: false,
+      renderCell: ({ row }) => (
+        <Box sx={{ display: 'flex', gap: 0.5 }}>
+          <Tooltip title="Editar">
+            <IconButton size="small" onClick={() => openEdit(row)}>
+              <EditIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title={row.status === 'Active' ? 'Suspender' : 'Activar'}>
+            <IconButton size="small" color={row.status === 'Active' ? 'warning' : 'success'} onClick={() => toggleMut.mutate(row.tenantCode)}>
+              <Switch size="small" checked={row.status === 'Active'} sx={{ pointerEvents: 'none' }} />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Eliminar">
+            <IconButton size="small" color="error" onClick={() => setDeleteCode(row.tenantCode)}>
+              <DeleteIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </Box>
+      ),
+    },
     { field: 'tenantCode', headerName: 'Código', width: 130 },
     { field: 'name',       headerName: 'Nombre', flex: 1.5, minWidth: 150 },
     {
@@ -183,28 +205,6 @@ export default function TenantAdminIndex() {
     {
       field: 'createdAt', headerName: 'Creado', width: 110,
       renderCell: ({ value }) => value ? new Date(value).toLocaleDateString('es-ES') : '—',
-    },
-    {
-      field: 'actions', headerName: '', width: 110, sortable: false,
-      renderCell: ({ row }) => (
-        <Box sx={{ display: 'flex', gap: 0.5 }}>
-          <Tooltip title="Editar">
-            <IconButton size="small" onClick={() => openEdit(row)}>
-              <EditIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title={row.status === 'Active' ? 'Suspender' : 'Activar'}>
-            <IconButton size="small" color={row.status === 'Active' ? 'warning' : 'success'} onClick={() => toggleMut.mutate(row.tenantCode)}>
-              <Switch size="small" checked={row.status === 'Active'} sx={{ pointerEvents: 'none' }} />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Eliminar">
-            <IconButton size="small" color="error" onClick={() => setDeleteCode(row.tenantCode)}>
-              <DeleteIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-        </Box>
-      ),
     },
   ];
 

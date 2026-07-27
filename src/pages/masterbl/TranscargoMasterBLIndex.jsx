@@ -59,29 +59,6 @@ export default function TranscargoMasterBLIndex() {
   }, [data, search]);
 
   const columns = [
-    { field: 'transcargoMasterBLID', headerName: 'ID', width: 70 },
-    { field: 'envio', headerName: 'Envío', width: 90 },
-    { field: 'billOfLading', headerName: 'Bill of Lading', width: 160 },
-    { field: 'empresaEnvia', headerName: 'Shipper', flex: 1, minWidth: 160 },
-    {
-      field: 'consignee',
-      headerName: 'Consignee',
-      flex: 1,
-      minWidth: 160,
-      renderCell: ({ value }) => (
-        <Tooltip title={value || ''}>
-          <Typography variant="body2" noWrap sx={{ maxWidth: '100%' }}>{value || '—'}</Typography>
-        </Tooltip>
-      ),
-    },
-    { field: 'buque', headerName: 'Buque', width: 130 },
-    { field: 'viaje', headerName: 'Viaje', width: 100 },
-    {
-      field: 'fecha',
-      headerName: 'Fecha',
-      width: 100,
-      valueFormatter: (value) => value ? dayjs(value).format('MM/DD/YYYY') : '—',
-    },
     {
       field: 'actions',
       headerName: 'Acciones',
@@ -118,6 +95,29 @@ export default function TranscargoMasterBLIndex() {
           </Tooltip>
         </Box>
       ),
+    },
+    { field: 'transcargoMasterBLID', headerName: 'ID', width: 70 },
+    { field: 'envio', headerName: 'Envío', width: 90 },
+    { field: 'billOfLading', headerName: 'Bill of Lading', width: 160 },
+    { field: 'empresaEnvia', headerName: 'Shipper', flex: 1, minWidth: 160 },
+    {
+      field: 'consignee',
+      headerName: 'Consignee',
+      flex: 1,
+      minWidth: 160,
+      renderCell: ({ value }) => (
+        <Tooltip title={value || ''}>
+          <Typography variant="body2" noWrap sx={{ maxWidth: '100%' }}>{value || '—'}</Typography>
+        </Tooltip>
+      ),
+    },
+    { field: 'buque', headerName: 'Buque', width: 130 },
+    { field: 'viaje', headerName: 'Viaje', width: 100 },
+    {
+      field: 'fecha',
+      headerName: 'Fecha',
+      width: 100,
+      valueFormatter: (value) => value ? dayjs(value).format('MM/DD/YYYY') : '—',
     },
   ];
 

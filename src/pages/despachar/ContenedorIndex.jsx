@@ -112,43 +112,6 @@ export default function ContenedorIndex({ hblType = 'aereo' }) {
   }, [data, search]);
 
   const columns = [
-    { field: 'contenedorEnvio',    headerName: 'Envío',       width: 90 },
-    { field: 'contenedorNumber',   headerName: 'Número',      flex: 1, minWidth: 130 },
-    { field: 'contenedorSello',    headerName: 'Sello',       width: 110 },
-    { field: 'contenedorMasterBL', headerName: 'Master BL',   flex: 1, minWidth: 130 },
-    {
-      field: 'dispatchDate',
-      headerName: 'Fecha Despacho',
-      width: 130,
-      valueFormatter: (v) => v ? dayjs(v).format('MM/DD/YYYY') : '—',
-    },
-    {
-      field: 'cantidadHbl',
-      headerName: 'Cant. HBL',
-      width: 95,
-      type: 'number',
-    },
-    {
-      field: 'cantidadBultos',
-      headerName: 'Cant. Bultos',
-      width: 110,
-      type: 'number',
-    },
-    {
-      field: 'pesoTotal',
-      headerName: 'Peso Total',
-      width: 100,
-      type: 'number',
-      valueFormatter: (v) => v != null ? Number(v).toFixed(2) : '0.00',
-    },
-    {
-      field: 'isActive',
-      headerName: 'Estado',
-      width: 90,
-      renderCell: ({ value }) => (
-        <Chip label={value ? 'Activo' : 'Inactivo'} color={value ? 'success' : 'default'} size="small" />
-      ),
-    },
     {
       field: 'actions',
       headerName: 'Acciones',
@@ -208,6 +171,43 @@ export default function ContenedorIndex({ hblType = 'aereo' }) {
             </Tooltip>
           )}
         </Box>
+      ),
+    },
+    { field: 'contenedorEnvio',    headerName: 'Envío',       width: 90 },
+    { field: 'contenedorNumber',   headerName: 'Número',      flex: 1, minWidth: 130 },
+    { field: 'contenedorSello',    headerName: 'Sello',       width: 110 },
+    { field: 'contenedorMasterBL', headerName: 'Master BL',   flex: 1, minWidth: 130 },
+    {
+      field: 'dispatchDate',
+      headerName: 'Fecha Despacho',
+      width: 130,
+      valueFormatter: (v) => v ? dayjs(v).format('MM/DD/YYYY') : '—',
+    },
+    {
+      field: 'cantidadHbl',
+      headerName: 'Cant. HBL',
+      width: 95,
+      type: 'number',
+    },
+    {
+      field: 'cantidadBultos',
+      headerName: 'Cant. Bultos',
+      width: 110,
+      type: 'number',
+    },
+    {
+      field: 'pesoTotal',
+      headerName: 'Peso Total',
+      width: 100,
+      type: 'number',
+      valueFormatter: (v) => v != null ? Number(v).toFixed(2) : '0.00',
+    },
+    {
+      field: 'isActive',
+      headerName: 'Estado',
+      width: 90,
+      renderCell: ({ value }) => (
+        <Chip label={value ? 'Activo' : 'Inactivo'} color={value ? 'success' : 'default'} size="small" />
       ),
     },
   ];

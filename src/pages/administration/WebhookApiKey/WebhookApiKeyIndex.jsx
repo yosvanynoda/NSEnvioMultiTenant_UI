@@ -60,6 +60,16 @@ export default function WebhookApiKeyIndex() {
   });
 
   const columns = [
+    {
+      field: 'actions', headerName: '', width: 56, sortable: false,
+      renderCell: ({ row }) => (
+        <Tooltip title="Eliminar">
+          <IconButton size="small" color="error" onClick={() => setDeleteId(row.webhookApiKeyID)}>
+            <DeleteIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
+      ),
+    },
     { field: 'thirdPartyName', headerName: 'Empresa / Tercero', flex: 1.5, minWidth: 160 },
     { field: 'tenantCode',     headerName: 'Tenant',            flex: 1,   minWidth: 100 },
     {
@@ -89,16 +99,6 @@ export default function WebhookApiKeyIndex() {
       renderCell: ({ value }) => value ? new Date(value).toLocaleDateString('es-ES') : '—',
     },
     { field: 'notes', headerName: 'Notas', flex: 1.5, minWidth: 130, renderCell: ({ value }) => value || '—' },
-    {
-      field: 'actions', headerName: '', width: 56, sortable: false,
-      renderCell: ({ row }) => (
-        <Tooltip title="Eliminar">
-          <IconButton size="small" color="error" onClick={() => setDeleteId(row.webhookApiKeyID)}>
-            <DeleteIcon fontSize="small" />
-          </IconButton>
-        </Tooltip>
-      ),
-    },
   ];
 
   return (

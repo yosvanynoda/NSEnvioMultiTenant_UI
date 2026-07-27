@@ -74,13 +74,6 @@ export default function PrecioEnvioIndex() {
   };
 
   const columns = [
-    { field: 'tipoEnvioName', headerName: 'Tipo Envío', flex: 1, minWidth: 80 },
-    { field: 'agenciaName', headerName: 'Agencia', flex: 1, minWidth: 160 },
-    { field: 'valor', headerName: 'Valor', width: 120, align: 'right', headerAlign: 'right', valueFormatter: (v) => v != null ? `$${Number(v).toFixed(2)}` : '—' },
-    {
-      field: 'isActive', headerName: 'Estado', width: 100,
-      renderCell: (params) => <Chip label={params.value ? 'Activo' : 'Inactivo'} color={params.value ? 'success' : 'default'} size="small" />,
-    },
     {
       field: 'actions', headerName: 'Acciones', width: 80, sortable: false,
       renderCell: (params) => (
@@ -88,6 +81,13 @@ export default function PrecioEnvioIndex() {
           <Tooltip title="Editar"><IconButton size="small" color="primary" onClick={() => navigate(`/sucursal/precioenvio/edit/${params.row.precioEnvioID}`)}><EditIcon fontSize="small" /></IconButton></Tooltip>
         </Box>
       ),
+    },
+    { field: 'tipoEnvioName', headerName: 'Tipo Envío', flex: 1, minWidth: 80 },
+    { field: 'agenciaName', headerName: 'Agencia', flex: 1, minWidth: 160 },
+    { field: 'valor', headerName: 'Valor', width: 120, align: 'right', headerAlign: 'right', valueFormatter: (v) => v != null ? `$${Number(v).toFixed(2)}` : '—' },
+    {
+      field: 'isActive', headerName: 'Estado', width: 100,
+      renderCell: (params) => <Chip label={params.value ? 'Activo' : 'Inactivo'} color={params.value ? 'success' : 'default'} size="small" />,
     },
   ];
 

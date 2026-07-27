@@ -72,6 +72,15 @@ export default function PromotionIndex() {
   }, [data, search]);
 
   const columns = [
+    {
+      field: 'actions', headerName: 'Acciones', width: 100, sortable: false,
+      renderCell: (params) => (
+        <Box>
+          <Tooltip title="Editar"><IconButton size="small" color="primary" onClick={() => navigate(`/administration/promotion/edit/${params.row.promotionID}`)}><EditIcon fontSize="small" /></IconButton></Tooltip>
+          <Tooltip title="Eliminar"><IconButton size="small" color="error" onClick={() => setDeleteId(params.row.promotionID)}><DeleteIcon fontSize="small" /></IconButton></Tooltip>
+        </Box>
+      ),
+    },
     { field: 'promotionName', headerName: 'Nombre', flex: 1, minWidth: 200 },
     {
       field: 'promotionType', headerName: 'Tipo', width: 110,
@@ -99,15 +108,6 @@ export default function PromotionIndex() {
           disabled={toggleMutation.isPending}
           onChange={(e) => toggleMutation.mutate({ id: params.row.promotionID, isActive: e.target.checked })}
         />
-      ),
-    },
-    {
-      field: 'actions', headerName: 'Acciones', width: 100, sortable: false,
-      renderCell: (params) => (
-        <Box>
-          <Tooltip title="Editar"><IconButton size="small" color="primary" onClick={() => navigate(`/administration/promotion/edit/${params.row.promotionID}`)}><EditIcon fontSize="small" /></IconButton></Tooltip>
-          <Tooltip title="Eliminar"><IconButton size="small" color="error" onClick={() => setDeleteId(params.row.promotionID)}><DeleteIcon fontSize="small" /></IconButton></Tooltip>
-        </Box>
       ),
     },
   ];

@@ -65,6 +65,16 @@ export default function ServiceInvoiceIndex() {
   };
 
   const columns = [
+    {
+      field: 'actions', headerName: 'Acciones', width: 120, sortable: false,
+      renderCell: (params) => (
+        <Box>
+          <Tooltip title="Editar"><IconButton size="small" color="primary" onClick={() => navigate(`/serviceinvoice/edit/${params.row.generalInvoiceID}`)}><EditIcon fontSize="small" /></IconButton></Tooltip>
+          <Tooltip title="Imprimir"><IconButton size="small" color="info" onClick={() => handlePrint(params.row.generalInvoiceID)}><PrintIcon fontSize="small" /></IconButton></Tooltip>
+          {canCancel && <Tooltip title="Eliminar"><IconButton size="small" color="error" onClick={() => setDeleteId(params.row.generalInvoiceID)}><DeleteIcon fontSize="small" /></IconButton></Tooltip>}
+        </Box>
+      ),
+    },
     { field: 'invoiceNumber',      headerName: 'Número',      width: 130 },
     {
       field: 'invoiceDate',
@@ -89,16 +99,6 @@ export default function ServiceInvoiceIndex() {
       width: 90,
       renderCell: ({ value }) => (
         <Chip label={value ? 'Activo' : 'Inactivo'} color={value ? 'success' : 'default'} size="small" />
-      ),
-    },
-    {
-      field: 'actions', headerName: 'Acciones', width: 120, sortable: false,
-      renderCell: (params) => (
-        <Box>
-          <Tooltip title="Editar"><IconButton size="small" color="primary" onClick={() => navigate(`/serviceinvoice/edit/${params.row.generalInvoiceID}`)}><EditIcon fontSize="small" /></IconButton></Tooltip>
-          <Tooltip title="Imprimir"><IconButton size="small" color="info" onClick={() => handlePrint(params.row.generalInvoiceID)}><PrintIcon fontSize="small" /></IconButton></Tooltip>
-          {canCancel && <Tooltip title="Eliminar"><IconButton size="small" color="error" onClick={() => setDeleteId(params.row.generalInvoiceID)}><DeleteIcon fontSize="small" /></IconButton></Tooltip>}
-        </Box>
       ),
     },
   ];

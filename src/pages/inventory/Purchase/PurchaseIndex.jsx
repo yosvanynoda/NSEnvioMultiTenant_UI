@@ -57,13 +57,6 @@ export default function PurchaseIndex() {
   }, [data, search]);
 
   const columns = [
-    { field: 'purchaseNumber', headerName: 'Número', width: 120 },
-    { field: 'purchaseName', headerName: 'Descripción', flex: 1, minWidth: 180 },
-    { field: 'purchaseDate', headerName: 'Fecha', width: 120, valueFormatter: (v) => v ? dayjs(v).format('MM/DD/YYYY') : '—' },
-    {
-      field: 'isActive', headerName: 'Estado', width: 100,
-      renderCell: (params) => <Chip label={params.value ? 'Activo' : 'Inactivo'} color={params.value ? 'success' : 'default'} size="small" />,
-    },
     {
       field: 'actions', headerName: 'Acciones', width: 110, sortable: false,
       renderCell: (params) => (
@@ -73,6 +66,13 @@ export default function PurchaseIndex() {
           {canCancel && <Tooltip title="Eliminar"><IconButton size="small" color="error" onClick={() => setDeleteId(params.row.purchaseID)}><DeleteIcon fontSize="small" /></IconButton></Tooltip>}
         </Box>
       ),
+    },
+    { field: 'purchaseNumber', headerName: 'Número', width: 120 },
+    { field: 'purchaseName', headerName: 'Descripción', flex: 1, minWidth: 180 },
+    { field: 'purchaseDate', headerName: 'Fecha', width: 120, valueFormatter: (v) => v ? dayjs(v).format('MM/DD/YYYY') : '—' },
+    {
+      field: 'isActive', headerName: 'Estado', width: 100,
+      renderCell: (params) => <Chip label={params.value ? 'Activo' : 'Inactivo'} color={params.value ? 'success' : 'default'} size="small" />,
     },
   ];
 

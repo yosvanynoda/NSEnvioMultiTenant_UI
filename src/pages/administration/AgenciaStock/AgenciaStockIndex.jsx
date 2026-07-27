@@ -67,15 +67,6 @@ export default function AgenciaStockIndex() {
   }, [data, search]);
 
   const columns = [
-    { field: 'productoName', headerName: 'Producto', flex: 1, minWidth: 180 },
-    { field: 'agenciaName', headerName: 'Agencia', flex: 1, minWidth: 180 },
-    { field: 'quantity', headerName: 'Cantidad', width: 110, align: 'right', headerAlign: 'right' },
-    {
-      field: 'isActive', headerName: 'Estado', width: 110,
-      renderCell: (params) => (
-        <Chip label={params.value ? 'Activo' : 'Inactivo'} color={params.value ? 'success' : 'default'} size="small" />
-      ),
-    },
     {
       field: 'actions', headerName: 'Acciones', width: 110, sortable: false,
       renderCell: (params) => (
@@ -91,6 +82,15 @@ export default function AgenciaStockIndex() {
             </IconButton>
           </Tooltip>
         </Box>
+      ),
+    },
+    { field: 'productoName', headerName: 'Producto', flex: 1, minWidth: 180 },
+    { field: 'agenciaName', headerName: 'Agencia', flex: 1, minWidth: 180 },
+    { field: 'quantity', headerName: 'Cantidad', width: 110, align: 'right', headerAlign: 'right' },
+    {
+      field: 'isActive', headerName: 'Estado', width: 110,
+      renderCell: (params) => (
+        <Chip label={params.value ? 'Activo' : 'Inactivo'} color={params.value ? 'success' : 'default'} size="small" />
       ),
     },
   ];

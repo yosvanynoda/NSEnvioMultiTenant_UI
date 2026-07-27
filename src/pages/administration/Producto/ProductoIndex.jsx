@@ -52,6 +52,15 @@ export default function ProductoIndex() {
   }, [data, search]);
 
   const columns = [
+    {
+      field: 'actions', headerName: 'Acciones', width: 110, sortable: false,
+      renderCell: (params) => (
+        <Box>
+          <Tooltip title="Editar"><IconButton size="small" color="primary" onClick={() => navigate(`/administration/producto/edit/${params.row.productoID}`)}><EditIcon fontSize="small" /></IconButton></Tooltip>
+          <Tooltip title="Eliminar"><IconButton size="small" color="error" onClick={() => setDeleteId(params.row.productoID)}><DeleteIcon fontSize="small" /></IconButton></Tooltip>
+        </Box>
+      ),
+    },
     { field: 'productoName', headerName: 'Nombre', flex: 1, minWidth: 200 },
     { field: 'categoriaAduanalName', headerName: 'Categoría', flex: 1, minWidth: 180 },
     { field: 'uMedidaName', headerName: 'U.Medida', width: 120 },
@@ -62,15 +71,6 @@ export default function ProductoIndex() {
       width: 100,
       renderCell: (params) => (
         <Chip label={params.value ? 'Activo' : 'Inactivo'} color={params.value ? 'success' : 'default'} size="small" />
-      ),
-    },
-    {
-      field: 'actions', headerName: 'Acciones', width: 110, sortable: false,
-      renderCell: (params) => (
-        <Box>
-          <Tooltip title="Editar"><IconButton size="small" color="primary" onClick={() => navigate(`/administration/producto/edit/${params.row.productoID}`)}><EditIcon fontSize="small" /></IconButton></Tooltip>
-          <Tooltip title="Eliminar"><IconButton size="small" color="error" onClick={() => setDeleteId(params.row.productoID)}><DeleteIcon fontSize="small" /></IconButton></Tooltip>
-        </Box>
       ),
     },
   ];

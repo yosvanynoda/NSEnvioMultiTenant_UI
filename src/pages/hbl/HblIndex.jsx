@@ -229,6 +229,33 @@ export default function HblIndex({ hblType = 'aereo' }) {
 
   // ── Columns ────────────────────────────────────────────────────────────────
   const columns = useMemo(() => [
+    {
+      field: 'actions',
+      headerName: 'Acciones',
+      width: 120,
+      sortable: false,
+      renderCell: (params) => (
+        <Box>
+          <Tooltip title="Editar">
+            <IconButton size="small" color="primary" onClick={() => navigate(`/hbl/${hblType}/edit/${params.row.hblid}`)}>
+              <EditIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          {canCancel && (
+            <Tooltip title="Cancelar HBL">
+              <IconButton size="small" color="error" onClick={() => setCancelId(params.row.hblid)}>
+                <CancelIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          )}
+          <Tooltip title="Imprimir PDF">
+            <IconButton size="small" color="info" onClick={() => handlePrint(params.row.hblid)}>
+              <PrintIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </Box>
+      ),
+    },
     { field: 'agenciaName', headerName: 'Agencia', width: 130 },
     { field: 'envio',   headerName: 'Envío',   width: 90 },
     {
@@ -352,33 +379,6 @@ export default function HblIndex({ hblType = 'aereo' }) {
         value
           ? <Chip label="Sí" color="error" size="small" />
           : <Chip label="No" color="default" size="small" variant="outlined" />,
-    },
-    {
-      field: 'actions',
-      headerName: 'Acciones',
-      width: 120,
-      sortable: false,
-      renderCell: (params) => (
-        <Box>
-          <Tooltip title="Editar">
-            <IconButton size="small" color="primary" onClick={() => navigate(`/hbl/${hblType}/edit/${params.row.hblid}`)}>
-              <EditIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-          {canCancel && (
-            <Tooltip title="Cancelar HBL">
-              <IconButton size="small" color="error" onClick={() => setCancelId(params.row.hblid)}>
-                <CancelIcon fontSize="small" />
-              </IconButton>
-            </Tooltip>
-          )}
-          <Tooltip title="Imprimir PDF">
-            <IconButton size="small" color="info" onClick={() => handlePrint(params.row.hblid)}>
-              <PrintIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-        </Box>
-      ),
     },
   ], [navigate, hblType, handlePrint, setCancelId, dateFormat, canCancel]);
 

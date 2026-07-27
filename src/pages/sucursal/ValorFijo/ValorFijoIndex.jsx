@@ -205,19 +205,6 @@ export default function ValorFijoIndex() {
   }, [data, search]);
 
   const columns = [
-    { field: 'productoName', headerName: 'Producto', flex: 1, minWidth: 220 },
-    {
-      field: 'valor',
-      headerName: 'Precio en HBL',
-      width: 150,
-      align: 'right',
-      headerAlign: 'right',
-      valueFormatter: (v) => v != null ? `$${Number(v).toFixed(2)}` : '—',
-    },
-    {
-      field: 'isActive', headerName: 'Estado', width: 100,
-      renderCell: (params) => <Chip label={params.value ? 'Activo' : 'Inactivo'} color={params.value ? 'success' : 'default'} size="small" />,
-    },
     {
       field: 'actions', headerName: 'Acciones', width: 110, sortable: false,
       renderCell: (params) => (
@@ -234,6 +221,19 @@ export default function ValorFijoIndex() {
           </Tooltip>
         </Box>
       ),
+    },
+    { field: 'productoName', headerName: 'Producto', flex: 1, minWidth: 220 },
+    {
+      field: 'valor',
+      headerName: 'Precio en HBL',
+      width: 150,
+      align: 'right',
+      headerAlign: 'right',
+      valueFormatter: (v) => v != null ? `$${Number(v).toFixed(2)}` : '—',
+    },
+    {
+      field: 'isActive', headerName: 'Estado', width: 100,
+      renderCell: (params) => <Chip label={params.value ? 'Activo' : 'Inactivo'} color={params.value ? 'success' : 'default'} size="small" />,
     },
   ];
 

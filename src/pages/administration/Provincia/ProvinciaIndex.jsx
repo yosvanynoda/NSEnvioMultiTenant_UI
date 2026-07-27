@@ -31,14 +31,6 @@ export default function ProvinciaIndex() {
   }, [data, search]);
 
   const columns = [
-    { field: 'provinciaName', headerName: 'Nombre', flex: 1, minWidth: 200 },
-    { field: 'zonaCP', headerName: 'Zona CP', width: 100 },
-    { field: 'aereoZona', headerName: 'Zona Aéreo', width: 120 },
-    { field: 'region', headerName: 'Región', width: 140 },
-    {
-      field: 'isActive', headerName: 'Estado', width: 100,
-      renderCell: (params) => <Chip label={params.value ? 'Activo' : 'Inactivo'} color={params.value ? 'success' : 'default'} size="small" />,
-    },
     {
       field: 'actions', headerName: 'Acciones', width: 80, sortable: false,
       renderCell: (params) => (
@@ -46,6 +38,14 @@ export default function ProvinciaIndex() {
           <Tooltip title="Editar"><IconButton size="small" color="primary" onClick={() => navigate(`/administration/provincia/edit/${params.row.provinciaID}`)}><EditIcon fontSize="small" /></IconButton></Tooltip>
         </Box>
       ),
+    },
+    { field: 'provinciaName', headerName: 'Nombre', flex: 1, minWidth: 200 },
+    { field: 'zonaCP', headerName: 'Zona CP', width: 100 },
+    { field: 'aereoZona', headerName: 'Zona Aéreo', width: 120 },
+    { field: 'region', headerName: 'Región', width: 140 },
+    {
+      field: 'isActive', headerName: 'Estado', width: 100,
+      renderCell: (params) => <Chip label={params.value ? 'Activo' : 'Inactivo'} color={params.value ? 'success' : 'default'} size="small" />,
     },
   ];
 

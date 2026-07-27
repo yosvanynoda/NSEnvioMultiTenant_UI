@@ -147,10 +147,6 @@ export default function PalletEditDialog({ open, onClose, onSuccess, hblType, pa
   };
 
   const currentHblColumns = [
-    { field: 'numero',          headerName: 'Número',      width: 130 },
-    { field: 'envio',           headerName: 'Envío',       width: 110 },
-    { field: 'remitenteName',   headerName: 'Remitente',   flex: 1, minWidth: 140 },
-    { field: 'destinatarioName', headerName: 'Destinatario', flex: 1, minWidth: 140 },
     {
       field: 'actions', headerName: '', width: 60, sortable: false,
       renderCell: ({ row }) => (
@@ -165,6 +161,10 @@ export default function PalletEditDialog({ open, onClose, onSuccess, hblType, pa
         </Tooltip>
       ),
     },
+    { field: 'numero',          headerName: 'Número',      width: 130 },
+    { field: 'envio',           headerName: 'Envío',       width: 110 },
+    { field: 'remitenteName',   headerName: 'Remitente',   flex: 1, minWidth: 140 },
+    { field: 'destinatarioName', headerName: 'Destinatario', flex: 1, minWidth: 140 },
   ];
 
   const availableHblColumns = [
