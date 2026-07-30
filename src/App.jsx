@@ -35,6 +35,7 @@ const Login = React.lazy(() => import('./pages/Login'));
 const ForgotPassword = React.lazy(() => import('./pages/ForgotPassword'));
 const ResetPassword = React.lazy(() => import('./pages/ResetPassword'));
 const Home = React.lazy(() => import('./pages/Home'));
+const PublicTracking = React.lazy(() => import('./pages/hbl/PublicTracking'));
 
 // HBL
 const HblIndex = React.lazy(() => import('./pages/hbl/HblIndex'));
@@ -162,6 +163,7 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/rastreo" element={<PublicTracking />} />
         <Route path="/forbidden" element={<ProtectedLayout><Forbidden /></ProtectedLayout>} />
 
         {/* Home */}

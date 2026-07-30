@@ -32,6 +32,7 @@ export const ENDPOINTS = {
   MUNICIPIO_BY_PROVINCIA: (provinciaId) => `api/v1/Municipio/byProvincia/${provinciaId}`,
   TIPO_ENVIO: 'api/v1/TipoEnvio',
   HBL_SEARCH: (q) => `api/v1/HblSearch?q=${encodeURIComponent(q)}`,
+  HBL_TRACKING: (q) => `api/v1/HblTracking?q=${encodeURIComponent(q)}`,
   NAVIERA: 'api/v1/Naviera',
   PROMOTION: 'api/v1/Promotion',
   PROMOTION_SET_ACTIVE: (id, isActive) => `api/v1/Promotion/${id}/active?isActive=${isActive}`,
