@@ -106,7 +106,7 @@ export default function HblTrackingCard({ compact = false, initialQuery = '' }) 
       )}
 
       {results.length > 0 && (
-        <Paper variant="outlined">
+        <Paper variant="outlined" sx={{ overflowX: 'auto' }}>
           <Table size="small">
             <TableHead>
               <TableRow>
