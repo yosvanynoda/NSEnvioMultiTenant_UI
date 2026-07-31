@@ -22,7 +22,6 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useTenant } from '../contexts/TenantContext';
 import PageTitle from '../components/common/PageTitle';
-import HblTrackingCard from '../components/hbl/HblTrackingCard';
 
 const QUICK_LINKS = [
   {
@@ -160,16 +159,6 @@ export default function Home() {
       </Box>
 
       <Divider sx={{ mb: 4 }} />
-
-      <Card sx={{ mb: 4 }}>
-        <CardContent>
-          <Typography variant="h6" fontWeight={700} gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <SearchIcon color="primary" fontSize="small" />
-            Consultar Envío de Cliente
-          </Typography>
-          <HblTrackingCard compact />
-        </CardContent>
-      </Card>
 
       <Grid container spacing={3}>
         {visibleLinks.map((link) => (

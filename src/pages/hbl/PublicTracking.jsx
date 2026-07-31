@@ -13,15 +13,16 @@ export default function PublicTracking() {
       sx={{
         minHeight: '100vh',
         display: 'flex',
-        alignItems: 'center',
+        alignItems: 'flex-start',
         justifyContent: 'center',
         bgcolor: 'primary.main',
         backgroundImage: 'linear-gradient(135deg, #1565c0 0%, #0d47a1 50%, #003c8f 100%)',
         p: 2,
+        py: { xs: 3, sm: 6 },
       }}
     >
-      <Card sx={{ maxWidth: 720, width: '100%', borderRadius: 3, boxShadow: 12 }}>
-        <CardContent sx={{ p: 4 }}>
+      <Card sx={{ maxWidth: { xs: 480, sm: 640, md: 1100 }, width: '100%', borderRadius: 3, boxShadow: 12 }}>
+        <CardContent sx={{ p: { xs: 2.5, sm: 4 } }}>
           <Box sx={{ textAlign: 'center', mb: 3 }}>
             <Box
               sx={{

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {
   Box, TextField, InputAdornment, Paper, Table, TableHead, TableBody,
   TableRow, TableCell, Chip, Typography, CircularProgress, Alert, Tooltip,
+  Stack, Divider,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import { useQuery } from '@tanstack/react-query';
@@ -106,52 +107,92 @@ export default function HblTrackingCard({ compact = false, initialQuery = '' }) 
       )}
 
       {results.length > 0 && (
-        <Paper variant="outlined" sx={{ overflowX: 'auto' }}>
-          <Table size="small">
-            <TableHead>
-              <TableRow>
-                <TableCell>Carrier</TableCell>
-                <TableCell>Número</TableCell>
-                <TableCell>Envío</TableCell>
-                <TableCell>Remitente</TableCell>
-                <TableCell>Destinatario</TableCell>
-                <TableCell>Estado</TableCell>
-                <TableCell>Productos</TableCell>
-                <TableCell>Hace</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {results.map((r) => {
-                const estado = getHblEstadoLabel(r.hblStatus);
-                return (
-                  <TableRow key={`${r.hblType}-${r.hblid}`} hover>
-                    <TableCell>
-                      <Chip label={CARRIER_LABELS[r.hblType] || r.hblType} size="small" variant="outlined" />
-                    </TableCell>
-                    <TableCell>{r.numero}</TableCell>
-                    <TableCell>{r.envio}</TableCell>
-                    <TableCell>
-                      {[r.remitenteName, r.remitenteLastName].filter(Boolean).join(' ')}
-                      {r.remitenteTelefono && (
-                        <Typography variant="caption" color="text.secondary" display="block">
-                          {r.remitenteTelefono}
-                        </Typography>
-                      )}
-                    </TableCell>
-                    <TableCell>{[r.destinatarioName, r.destinatarioLastName].filter(Boolean).join(' ')}</TableCell>
-                    <TableCell><Chip label={estado.label} color={estado.color} size="small" /></TableCell>
-                    <TableCell>
-                      <Tooltip title={r.bultoDescriptions || ''}>
-                        <Typography variant="body2" noWrap sx={{ maxWidth: 220 }}>{r.bultoDescriptions || '—'}</Typography>
-                      </Tooltip>
-                    </TableCell>
-                    <TableCell>{formatHaceTiempo(r.fecha)}</TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </Paper>
+        <>
+          {/* Mobile / narrow: stacked cards */}
+          <Stack spacing={1.5} sx={{ display: { xs: 'flex', md: 'none' } }}>
+            {results.map((r) => {
+              const estado = getHblEstadoLabel(r.hblStatus);
+              return (
+                <Paper key={`${r.hblType}-${r.hblid}`} variant="outlined" sx={{ p: 2 }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                    <Chip label={CARRIER_LABELS[r.hblType] || r.hblType} size="small" variant="outlined" />
+                    <Chip label={estado.label} color={estado.color} size="small" />
+                  </Box>
+                  <Typography variant="subtitle2" fontWeight={700}>
+                    {r.numero} {r.envio ? `— ${r.envio}` : ''}
+                  </Typography>
+                  <Divider sx={{ my: 1 }} />
+                  <Typography variant="caption" color="text.secondary" display="block">Remitente</Typography>
+                  <Typography variant="body2">
+                    {[r.remitenteName, r.remitenteLastName].filter(Boolean).join(' ') || '—'}
+                    {r.remitenteTelefono && ` · ${r.remitenteTelefono}`}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary" display="block" sx={{ mt: 1 }}>Destinatario</Typography>
+                  <Typography variant="body2">
+                    {[r.destinatarioName, r.destinatarioLastName].filter(Boolean).join(' ') || '—'}
+                  </Typography>
+                  {r.bultoDescriptions && (
+                    <>
+                      <Typography variant="caption" color="text.secondary" display="block" sx={{ mt: 1 }}>Productos</Typography>
+                      <Typography variant="body2">{r.bultoDescriptions}</Typography>
+                    </>
+                  )}
+                  <Typography variant="caption" color="text.secondary" display="block" sx={{ mt: 1 }}>
+                    Hace {formatHaceTiempo(r.fecha)}
+                  </Typography>
+                </Paper>
+              );
+            })}
+          </Stack>
+
+          {/* Desktop: table */}
+          <Paper variant="outlined" sx={{ overflowX: 'auto', display: { xs: 'none', md: 'block' } }}>
+            <Table size="small">
+              <TableHead>
+                <TableRow>
+                  <TableCell>Carrier</TableCell>
+                  <TableCell>Número</TableCell>
+                  <TableCell>Envío</TableCell>
+                  <TableCell>Remitente</TableCell>
+                  <TableCell>Destinatario</TableCell>
+                  <TableCell>Estado</TableCell>
+                  <TableCell>Productos</TableCell>
+                  <TableCell>Hace</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {results.map((r) => {
+                  const estado = getHblEstadoLabel(r.hblStatus);
+                  return (
+                    <TableRow key={`${r.hblType}-${r.hblid}`} hover>
+                      <TableCell>
+                        <Chip label={CARRIER_LABELS[r.hblType] || r.hblType} size="small" variant="outlined" />
+                      </TableCell>
+                      <TableCell>{r.numero}</TableCell>
+                      <TableCell>{r.envio}</TableCell>
+                      <TableCell>
+                        {[r.remitenteName, r.remitenteLastName].filter(Boolean).join(' ')}
+                        {r.remitenteTelefono && (
+                          <Typography variant="caption" color="text.secondary" display="block">
+                            {r.remitenteTelefono}
+                          </Typography>
+                        )}
+                      </TableCell>
+                      <TableCell>{[r.destinatarioName, r.destinatarioLastName].filter(Boolean).join(' ')}</TableCell>
+                      <TableCell><Chip label={estado.label} color={estado.color} size="small" /></TableCell>
+                      <TableCell>
+                        <Tooltip title={r.bultoDescriptions || ''}>
+                          <Typography variant="body2" noWrap sx={{ maxWidth: 220 }}>{r.bultoDescriptions || '—'}</Typography>
+                        </Tooltip>
+                      </TableCell>
+                      <TableCell>{formatHaceTiempo(r.fecha)}</TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </Paper>
+        </>
       )}
     </Box>
   );
