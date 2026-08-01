@@ -385,11 +385,16 @@ export default function HblCreate({ hblType = 'aereo', editMode = false }) {
   });
 
   // ── All products filtered by the user's franquicia (pre-loaded once, grouped by tipoProducto) ──
+  // hblType also scopes which products keep their ShowInShortcut button on this carrier's
+  // page (see ProductoCarrier) -- the product itself stays in the list either way.
   const { data: allProductos = [] } = useQuery({
-    queryKey: ['producto-all', user?.sucursalId ?? null],
+    queryKey: ['producto-all', user?.sucursalId ?? null, hblType],
     queryFn: async () => {
-      const params = user?.sucursalId ? `?sucursalId=${user.sucursalId}` : '';
-      const res = await apiClient.get(`${ENDPOINTS.PRODUCTO}${params}`);
+      const params = new URLSearchParams();
+      if (user?.sucursalId) params.set('sucursalId', user.sucursalId);
+      if (hblType) params.set('hblType', hblType);
+      const qs = params.toString();
+      const res = await apiClient.get(`${ENDPOINTS.PRODUCTO}${qs ? `?${qs}` : ''}`);
       return Array.isArray(res.data) ? res.data : res.data?.data ?? [];
     },
   });
