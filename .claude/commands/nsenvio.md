@@ -372,3 +372,23 @@ Full detail in the `project_postgres_vps_migration` memory. Summary: all 581 sto
 - **FastReport `.frx` `CommandParameter DataType` numeric codes are `NpgsqlTypes.NpgsqlDbType` values, not `System.Data.DbType`** — `9`=Integer, `19`=Text, `21`=Timestamp (verified by printing the actual enum). Nearly every report template had these miscoded (using values that happened to be `System.Data.DbType`-shaped), causing `InvalidCastException`s with bizarre target types like `LSeg`/`Money`. This was the single biggest open risk flagged since the earliest migration research and turned out to be a parameter-code bug, not an architecture problem.
 - A report's header can render fully blank (while its line-items table renders fine) if the header query's `JOIN` uses a nullable path to get required data — e.g. `ServiceInvoice.frx`/`InventoryInvoice.frx` joined `agencias` via `remitente.agenciaid` (nullable) instead of the invoice's own `agenciaid` (`NOT NULL` with its own FK). Symptom: `INNER JOIN` silently drops the header row whenever that nullable path is null.
 - `PurchaseCreate.jsx` was missing a product-picker entirely — pre-existing app bug, not migration-related — see the "Order & Purchase — ProductoInventoryID only in details" section above; it now matches `OrderCreate.jsx`'s pattern with a required `productoInventoryId` select field.
+
+## Public tracking page + Home dedup fixes (2026-07-31)
+
+`Home.jsx` had two overlapping HBL search entry points — an inline `HblTrackingCard` (compact) and a "Buscar HBL" quick-link card to `/hbl/search`. Removed the inline card + its import; kept the quick-link tile (fuller `HblGlobalSearch` with a "Ver Detalle" action).
+
+`PublicTracking.jsx` (`/rastreo`, unauthenticated customer tracking page): fixed two responsive bugs found via the live demo site.
+- Desktop: the outer `Box` used `alignItems: 'center'` on a `minHeight: 100vh` flex container — once search results made the card taller than the viewport, centering pushed equal blank space above/below, forcing a scroll through empty space. Changed to `alignItems: 'flex-start'` + responsive `py`.
+- The card was capped at `maxWidth: 720` — too narrow for the 8-column results table on desktop, forcing an internal horizontal scrollbar with unused space on either side. Now responsive: `{ xs: 480, sm: 640, md: 1100 }`.
+- `HblTrackingCard.jsx` results: added a stacked-card layout for `xs`/`sm` (was an unreadable 8-column table at phone widths); table kept for `md+`.
+
+## ProductoCarrier — per-carrier shortcut restriction (2026-08-01)
+
+Full detail in the `project_producto_carrier` memory. Products with `ShowInShortcut=true` can now be restricted to specific carriers (Transcargo, Aereo, Palco, CubaPack, CubaPost, TranscargoAereo) instead of always showing on every carrier's Add Bulto quick-access list — empty selection (default) still shows on all carriers.
+
+- New Postgres table `productocarriers` (productoid, hbltype), same shape as the existing `productosucursales` per-franquicia pattern.
+- `sp_producto_getall` gained a `p_hbltype` param — it does NOT remove the product from results (still fully searchable on every carrier), it only flips the returned `showinshortcut` boolean to `false` when the carrier isn't in the product's allow-list. This meant zero changes were needed to the existing `allProductos.filter(p => p.showInShortcut)` logic in `HblCreate.jsx`/`BultoModal.jsx` — just thread `hblType` into the `Producto` GET query.
+- New `ProductoCarrierController` (GET byProducto/{id}, POST setForProducto) mirrors `ProductoSucursalController` exactly.
+- `ProductoForm.jsx` got a "Carriers" panel (info-blue header) right after the existing Franquicias panel, same Autocomplete-multiple pattern.
+- Built directly against Postgres syntax (the `postgradeSQLMigration` branch's schema) since that's what the live demo site actually runs — not the legacy SQL Server scripts.
+- Migration script was handed to the user to run manually against the demo tenant's DB rather than Claude connecting to it directly (see `feedback_user_runs_db_migrations` memory).
