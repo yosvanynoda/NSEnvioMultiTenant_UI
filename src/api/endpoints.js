@@ -18,6 +18,7 @@ export const ENDPOINTS = {
   PRODUCTO: 'api/v1/Producto',
   PRODUCTO_PRECIO_ENVIO: 'api/v1/ProductoPrecioEnvio',
   PRODUCTO_SUCURSAL: 'api/v1/ProductoSucursal',
+  PRODUCTO_CARRIER: 'api/v1/ProductoCarrier',
   PRODUCTO_INVENTORY: 'api/v1/ProductoInventory',
   PRODUCTO_INVENTORY_FOR_HBL: (searchText, agenciaId, tipoEnvioId) => {
     const p = new URLSearchParams();

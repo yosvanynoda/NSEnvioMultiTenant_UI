@@ -9,6 +9,7 @@ import {
 } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import BusinessIcon from '@mui/icons-material/Business';
+import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import SaveIcon from '@mui/icons-material/Save';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import InventoryIcon from '@mui/icons-material/Inventory';
@@ -26,6 +27,15 @@ import PageTitle from '../../../components/common/PageTitle';
 const TIPO_PRODUCTO_OPTIONS = [
   { value: 1, label: 'Duradero / Producto Regular' },
   { value: 3, label: 'Medicamento / Equipo Médico' },
+];
+
+const CARRIER_OPTIONS = [
+  { hblType: 'transcargo', label: 'Transcargo' },
+  { hblType: 'transcargoaereo', label: 'Transcargo Aéreo' },
+  { hblType: 'palco', label: 'Palco' },
+  { hblType: 'aereo', label: 'Aéreo' },
+  { hblType: 'cubapack', label: 'CubaPack' },
+  { hblType: 'cubapost', label: 'CubaPost' },
 ];
 
 const schema = yup.object({
@@ -418,6 +428,10 @@ export default function ProductoForm() {
   const [franquiciasPermitidas, setFranquiciasPermitidas] = useState([]); // SucursalDto[]
   const [savingFranquicias, setSavingFranquicias] = useState(false);
 
+  // Carriers (shortcut-visibility restrictions)
+  const [carriersPermitidos, setCarriersPermitidos] = useState([]); // CARRIER_OPTIONS subset
+  const [savingCarriers, setSavingCarriers] = useState(false);
+
   const { control, handleSubmit, reset, formState: { errors } } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
@@ -504,6 +518,17 @@ export default function ProductoForm() {
         .then((res) => {
           const rows = Array.isArray(res.data) ? res.data : res.data?.data ?? [];
           setFranquiciasPermitidas(rows.map(r => ({ sucursalID: r.sucursalID, sucursalName: r.sucursalName })));
+        })
+        .catch(() => {});
+
+      apiClient.get(`${ENDPOINTS.PRODUCTO_CARRIER}/byProducto/${id}`)
+        .then((res) => {
+          const rows = Array.isArray(res.data) ? res.data : res.data?.data ?? [];
+          setCarriersPermitidos(
+            rows
+              .map(r => CARRIER_OPTIONS.find(c => c.hblType === r.hblType))
+              .filter(Boolean)
+          );
         })
         .catch(() => {});
     }
@@ -621,6 +646,22 @@ export default function ProductoForm() {
       setSnackbar({ open: true, message: err.message || 'Error al guardar franquicias', severity: 'error' });
     } finally {
       setSavingFranquicias(false);
+    }
+  };
+
+  const handleSaveCarriers = async (selected) => {
+    setSavingCarriers(true);
+    try {
+      await apiClient.post(`${ENDPOINTS.PRODUCTO_CARRIER}/setForProducto`, {
+        productoID: parseInt(id),
+        hblTypes: selected.map(c => c.hblType),
+      });
+      setCarriersPermitidos(selected);
+      setSnackbar({ open: true, message: 'Carriers actualizados', severity: 'success' });
+    } catch (err) {
+      setSnackbar({ open: true, message: err.message || 'Error al guardar carriers', severity: 'error' });
+    } finally {
+      setSavingCarriers(false);
     }
   };
 
@@ -960,6 +1001,65 @@ export default function ProductoForm() {
                   {franquiciasPermitidas.length === 0 && (
                     <Stack direction="row" alignItems="center" spacing={1} sx={{ mt: 1.5 }}>
                       <Chip label="Visible para todas" color="success" size="small" variant="outlined" />
+                    </Stack>
+                  )}
+                </>
+              )}
+            </Box>
+          </Paper>
+
+          <Paper elevation={3} sx={{ width: '100%', borderRadius: 3, overflow: 'hidden' }}>
+            <Box sx={{ bgcolor: 'info.main', color: 'white', px: { xs: 2, sm: 4 }, py: { xs: 1.5, sm: 2 }, display: 'flex', alignItems: 'center', gap: 1.5 }}>
+              <LocalShippingIcon />
+              <Typography variant="h6" fontWeight={700}>Carriers</Typography>
+            </Box>
+            <Box sx={{ px: { xs: 1, sm: 2 }, py: 2 }}>
+              {!isEdit ? (
+                <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', py: 3 }}>
+                  Guarde el producto primero para configurar los carriers.
+                </Typography>
+              ) : (
+                <>
+                  <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1.5 }}>
+                    Vacío = acceso rápido visible en todos los carriers. Esto solo restringe el botón de acceso rápido; el producto sigue siendo buscable en todos los carriers.
+                  </Typography>
+                  <Autocomplete
+                    multiple
+                    options={CARRIER_OPTIONS}
+                    getOptionLabel={(o) => o.label || ''}
+                    value={carriersPermitidos}
+                    onChange={(_, newVal) => setCarriersPermitidos(newVal)}
+                    isOptionEqualToValue={(o, v) => o.hblType === v.hblType}
+                    size="small"
+                    renderTags={(value, getTagProps) =>
+                      value.map((opt, index) => (
+                        <Chip
+                          key={opt.hblType}
+                          label={opt.label}
+                          size="small"
+                          {...getTagProps({ index })}
+                        />
+                      ))
+                    }
+                    renderInput={(params) => (
+                      <TextField {...params} label="Carriers con acceso rápido" placeholder="Buscar..." />
+                    )}
+                  />
+                  <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
+                    <Button
+                      variant="contained"
+                      size="small"
+                      color="info"
+                      disabled={savingCarriers}
+                      startIcon={savingCarriers ? <CircularProgress size={14} color="inherit" /> : <SaveIcon />}
+                      onClick={() => handleSaveCarriers(carriersPermitidos)}
+                    >
+                      Guardar Carriers
+                    </Button>
+                  </Box>
+                  {carriersPermitidos.length === 0 && (
+                    <Stack direction="row" alignItems="center" spacing={1} sx={{ mt: 1.5 }}>
+                      <Chip label="Visible en todos los carriers" color="success" size="small" variant="outlined" />
                     </Stack>
                   )}
                 </>
