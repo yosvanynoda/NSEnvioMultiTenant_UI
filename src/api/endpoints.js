@@ -34,6 +34,8 @@ export const ENDPOINTS = {
   TIPO_ENVIO: 'api/v1/TipoEnvio',
   HBL_SEARCH: (q) => `api/v1/HblSearch?q=${encodeURIComponent(q)}`,
   HBL_TRACKING: (q) => `api/v1/HblTracking?q=${encodeURIComponent(q)}`,
+  HBL_CANCELLED: 'api/v1/HblCancel',
+  HBL_CANCELLED_REVERT: 'api/v1/HblCancel/revert',
   NAVIERA: 'api/v1/Naviera',
   PROMOTION: 'api/v1/Promotion',
   PROMOTION_SET_ACTIVE: (id, isActive) => `api/v1/Promotion/${id}/active?isActive=${isActive}`,
@@ -164,6 +166,8 @@ export const HBL_ENDPOINT_MAP = {
   cubapost: ENDPOINTS.CUBA_POST_HBL,
   transcargoaereo: ENDPOINTS.TRANSCARGO_AEREO_HBL,
 };
+
+export const HBL_READY_TO_CANCEL = (hblType, id) => `${HBL_ENDPOINT_MAP[hblType]}/${id}/ready-to-cancel`;
 
 export const CONTENEDOR_ENDPOINT_MAP = {
   aereo: ENDPOINTS.AEREO_CONTENEDOR,

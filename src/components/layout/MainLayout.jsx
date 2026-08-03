@@ -35,6 +35,7 @@ import InventoryIcon from '@mui/icons-material/Inventory';
 import ReceiptIcon from '@mui/icons-material/Receipt';
 import RequestQuoteIcon from '@mui/icons-material/RequestQuote';
 import AssessmentIcon from '@mui/icons-material/Assessment';
+import CancelIcon from '@mui/icons-material/Cancel';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTenant } from '../../contexts/TenantContext';
 
@@ -164,6 +165,15 @@ const NAV_ITEMS = [
       { label: 'Reporte de Venta', path: '/reports/reporteventa' },
       { label: 'Transcargo Resumen por Envío', path: '/reports/resumentranscargo' },
       { label: 'Productos Especiales', path: '/reports/resumen-productos-especiales' },
+    ],
+  },
+  {
+    label: 'Cancelados',
+    icon: <CancelIcon fontSize="small" />,
+    serviceKey: null,
+    adminOnly: true,
+    children: [
+      { label: 'HBL Cancelados', path: '/hbl/cancelados' },
     ],
   },
 ];

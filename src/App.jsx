@@ -42,6 +42,7 @@ const HblIndex = React.lazy(() => import('./pages/hbl/HblIndex'));
 const HblCreate = React.lazy(() => import('./pages/hbl/HblCreate'));
 const HblEdit = React.lazy(() => import('./pages/hbl/HblEdit'));
 const HblGlobalSearch = React.lazy(() => import('./pages/hbl/HblGlobalSearch'));
+const HblCancelados = React.lazy(() => import('./pages/hbl/HblCancelados'));
 const HblPrintPage = React.lazy(() => import('./pages/hbl/HblPrintPage'));
 
 // Administration
@@ -171,6 +172,7 @@ export default function App() {
 
         {/* HBL - Global Search */}
         <Route path="/hbl/search" element={<ProtectedLayout><HblGlobalSearch /></ProtectedLayout>} />
+        <Route path="/hbl/cancelados" element={<ProtectedLayout><AdminRoute><HblCancelados /></AdminRoute></ProtectedLayout>} />
 
         {/* HBL - Aéreo */}
         <Route path="/hbl/aereo" element={<ProtectedLayout><HblIndex hblType="aereo" /></ProtectedLayout>} />

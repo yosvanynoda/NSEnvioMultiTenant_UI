@@ -11,6 +11,8 @@ import { DataGrid } from '@mui/x-data-grid';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import CancelIcon from '@mui/icons-material/Cancel';
+import FlagIcon from '@mui/icons-material/Flag';
+import OutlinedFlagIcon from '@mui/icons-material/OutlinedFlag';
 import PrintIcon from '@mui/icons-material/Print';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import MoveToInboxIcon from '@mui/icons-material/MoveToInbox';
@@ -22,7 +24,7 @@ import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import apiClient from '../../api/apiClient';
-import { HBL_ENDPOINT_MAP, ENDPOINTS, HBL_DOC_TYPES, HBL_BULK_DELETE_MAP } from '../../api/endpoints';
+import { HBL_ENDPOINT_MAP, HBL_READY_TO_CANCEL, ENDPOINTS, HBL_DOC_TYPES, HBL_BULK_DELETE_MAP } from '../../api/endpoints';
 import PageTitle from '../../components/common/PageTitle';
 import ConfirmDialog from '../../components/common/ConfirmDialog';
 import BulkPrintDialog     from './dialogs/BulkPrintDialog';
@@ -72,11 +74,14 @@ const TYPE_KEY_MAP = {
   cubapack: 'cubapack', cubapost: 'cubapost', transcargoaereo: 'transcargoaereo',
 };
 
+const CONTAINER_BLOCK_MESSAGE =
+  'Este HBL está en un contenedor. Solo un Administrador puede cancelarlo o marcarlo para cancelar.';
+
 export default function HblIndex({ hblType = 'aereo' }) {
   const navigate      = useNavigate();
   const queryClient   = useQueryClient();
   const { user, isSuperUser, isAdmin, isSuperAdmin, isGerente } = useAuth();
-  const canCancel = isSuperUser || isAdmin || isSuperAdmin || isGerente;
+  const isPrivileged = isAdmin || isSuperAdmin;
   const { tenantConfig } = useTenant();
   const endpoint      = HBL_ENDPOINT_MAP[hblType];
   const labels        = HBL_LABELS[hblType] || HBL_LABELS.aereo;
@@ -111,6 +116,10 @@ export default function HblIndex({ hblType = 'aereo' }) {
     },
     staleTime: Infinity,
   });
+
+  // When the tenant restricts direct cancel to Manager, SuperUser drops to
+  // mark-ready-to-cancel-only (same as a plain User); Admin/SuperAdmin/Manager unaffected.
+  const canCancel = isAdmin || isSuperAdmin || isGerente || (isSuperUser && !generalSetting?.restrictCancelToManager);
   const dateFormat = 'MM/DD/YYYY';
 
   const { data, isLoading, isError, refetch } = useQuery({
@@ -126,6 +135,14 @@ export default function HblIndex({ hblType = 'aereo' }) {
   const availableDocs = useMemo(
     () => tenantConfig?.hblDocuments?.[TYPE_KEY_MAP[hblType]] ?? HBL_DOC_TYPES[hblType] ?? ['label', 'factura'],
     [tenantConfig, hblType],
+  );
+
+  // Rows marked isReadyToCancel show "ReadyToCancel" in the Envío column/filter
+  // instead of their real envio value -- lets admins filter for all of them at
+  // once via the existing "Filtrar por Envío" box, no separate UI needed.
+  const displayRows = useMemo(
+    () => (data ?? []).map(r => r.isReadyToCancel ? { ...r, envio: 'ReadyToCancel' } : r),
+    [data]
   );
 
   // ── Unique agencias from data ──────────────────────────────────────────────
@@ -150,6 +167,36 @@ export default function HblIndex({ hblType = 'aereo' }) {
       setCancelId(null);
     },
   });
+
+  const readyToCancelMutation = useMutation({
+    mutationFn: ({ id, value }) => apiClient.patch(HBL_READY_TO_CANCEL(hblType, id), {
+      isReadyToCancel: value,
+      lastUpdatedBy: user?.username || '',
+      lastUpdatedDate: new Date().toISOString(),
+    }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['hbl', hblType] });
+    },
+    onError: (err) => {
+      setSnackbar({ open: true, message: err.message || 'Error al actualizar', severity: 'error' });
+    },
+  });
+
+  const handleCancelClick = useCallback((row) => {
+    if (row.contenedorID != null && !isPrivileged) {
+      setSnackbar({ open: true, message: CONTAINER_BLOCK_MESSAGE, severity: 'warning' });
+      return;
+    }
+    setCancelId(row.hblid);
+  }, [isPrivileged]);
+
+  const handleToggleReadyToCancel = useCallback((row) => {
+    if (row.contenedorID != null && !isPrivileged) {
+      setSnackbar({ open: true, message: CONTAINER_BLOCK_MESSAGE, severity: 'warning' });
+      return;
+    }
+    readyToCancelMutation.mutate({ id: row.hblid, value: !row.isReadyToCancel });
+  }, [isPrivileged, readyToCancelMutation]);
 
   const bulkDeleteMutation = useMutation({
     mutationFn: (ids) => apiClient.post(HBL_BULK_DELETE_MAP[hblType], {
@@ -178,7 +225,7 @@ export default function HblIndex({ hblType = 'aereo' }) {
 
   // ── Filtering ──────────────────────────────────────────────────────────────
   const filteredRows = useMemo(() => {
-    let rows = data ?? [];
+    let rows = displayRows;
 
     // Show only selected toggle
     if (showOnlySelected) {
@@ -220,7 +267,7 @@ export default function HblIndex({ hblType = 'aereo' }) {
     }
 
     return rows;
-  }, [data, showOnlySelected, selectedIds, agenciaFilter, envioFilter, search]);
+  }, [displayRows, showOnlySelected, selectedIds, agenciaFilter, envioFilter, search]);
 
   const saveFilter = (patch) => {
     const next = { search, envioFilter, ...patch };
@@ -232,7 +279,7 @@ export default function HblIndex({ hblType = 'aereo' }) {
     {
       field: 'actions',
       headerName: 'Acciones',
-      width: 120,
+      width: 155,
       sortable: false,
       renderCell: (params) => (
         <Box>
@@ -241,9 +288,14 @@ export default function HblIndex({ hblType = 'aereo' }) {
               <EditIcon fontSize="small" />
             </IconButton>
           </Tooltip>
+          <Tooltip title={params.row.isReadyToCancel ? 'Quitar marca de Cancelar' : 'Marcar para Cancelar'}>
+            <IconButton size="small" color={params.row.isReadyToCancel ? 'error' : 'default'} onClick={() => handleToggleReadyToCancel(params.row)}>
+              {params.row.isReadyToCancel ? <FlagIcon fontSize="small" /> : <OutlinedFlagIcon fontSize="small" />}
+            </IconButton>
+          </Tooltip>
           {canCancel && (
             <Tooltip title="Cancelar HBL">
-              <IconButton size="small" color="error" onClick={() => setCancelId(params.row.hblid)}>
+              <IconButton size="small" color="error" onClick={() => handleCancelClick(params.row)}>
                 <CancelIcon fontSize="small" />
               </IconButton>
             </Tooltip>
@@ -380,7 +432,7 @@ export default function HblIndex({ hblType = 'aereo' }) {
           ? <Chip label="Sí" color="error" size="small" />
           : <Chip label="No" color="default" size="small" variant="outlined" />,
     },
-  ], [navigate, hblType, handlePrint, setCancelId, dateFormat, canCancel]);
+  ], [navigate, hblType, handlePrint, handleCancelClick, handleToggleReadyToCancel, dateFormat, canCancel]);
 
   const hasSelection = selectedIds.length > 0;
 

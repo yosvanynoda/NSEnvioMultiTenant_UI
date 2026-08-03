@@ -22,6 +22,7 @@ const schema = yup.object({
   valorAduanalMaxEna: yup.number().integer().min(0).default(0).typeError('Ingrese un número'),
   linkWithProducts: yup.boolean().default(false),
   blockScanError: yup.boolean().default(false),
+  restrictCancelToManager: yup.boolean().default(false),
 });
 
 export default function GeneralSettingIndex() {
@@ -34,7 +35,7 @@ export default function GeneralSettingIndex() {
 
   const { control, handleSubmit, reset, formState: { errors } } = useForm({
     resolver: yupResolver(schema),
-    defaultValues: { weightInput: 1, conversionFactor: 1, weightOutput: 2, priceBy: 0, currency: 1, localization: '', valorAduanalMax: 0, valorAduanalMaxEna: 0, linkWithProducts: false, blockScanError: false },
+    defaultValues: { weightInput: 1, conversionFactor: 1, weightOutput: 2, priceBy: 0, currency: 1, localization: '', valorAduanalMax: 0, valorAduanalMaxEna: 0, linkWithProducts: false, blockScanError: false, restrictCancelToManager: false },
   });
 
   useEffect(() => {
@@ -55,6 +56,7 @@ export default function GeneralSettingIndex() {
             valorAduanalMaxEna: settings.valorAduanalMaxEna ?? 0,
             linkWithProducts: settings.linkWithProducts ?? false,
             blockScanError: settings.blockScanError ?? false,
+            restrictCancelToManager: settings.restrictCancelToManager ?? false,
           });
         }
       })
@@ -165,6 +167,14 @@ export default function GeneralSettingIndex() {
             <Grid size={{ xs: 12, sm: 6 }} sx={{ display: 'flex', alignItems: 'center' }}>
               <Controller name="blockScanError" control={control} render={({ field }) => (
                 <FormControlLabel control={<Switch checked={Boolean(field.value)} onChange={e => field.onChange(e.target.checked)} color="error" />} label="Bloquear escaneo en caso de error" />
+              )} />
+            </Grid>
+            <Grid size={12}>
+              <Controller name="restrictCancelToManager" control={control} render={({ field }) => (
+                <FormControlLabel
+                  control={<Switch checked={Boolean(field.value)} onChange={e => field.onChange(e.target.checked)} color="warning" />}
+                  label="Solo el Gerente puede cancelar HBLs directamente (los demás solo pueden marcar para cancelar)"
+                />
               )} />
             </Grid>
           </Grid>
