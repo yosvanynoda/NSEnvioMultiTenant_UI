@@ -1068,6 +1068,7 @@ export default function HblCreate({ hblType = 'aereo', editMode = false }) {
               onCreateOpened={() => setAutoOpenDestinatarioCreate(false)}
               stagingPhone={stagingPhone}
               onStagingCleared={() => setStagingPhone(null)}
+              remitentePhone={remitente?.remitenteTelefono || null}
             />
           </Grid>
         </Grid>

@@ -746,6 +746,7 @@ export default function DestinatarioSection({
   onCreateOpened,
   stagingPhone,
   onStagingCleared,
+  remitentePhone,
 }) {
   const { user } = useAuth();
   const [options, setOptions] = useState([]);
@@ -886,19 +887,26 @@ export default function DestinatarioSection({
     setAddresses([]);
   };
 
-  // Load staging destinatarios whenever stagingPhone changes
+  // Pending imported destinatarios (ImportContact rows not yet activated) for this
+  // remitente's phone. Driven by remitentePhone so it stays available regardless of
+  // whether the remitente came from the staging search or already existed, and
+  // regardless of whether a destinatario has already been picked -- staff can check
+  // for other pending imports at any time, not just right after selecting a
+  // brand-new staging remitente.
+  const pendingPhone = remitentePhone || stagingPhone || null;
+
   React.useEffect(() => {
-    if (!stagingPhone) { setStagingDestinatarios([]); return; }
+    if (!pendingPhone) { setStagingDestinatarios([]); return; }
     const agenciaID = user?.agenciaId ?? 0;
     setStagingLoading(true);
-    apiClient.get(`${ENDPOINTS.IMPORT_CONTACT}/GetDestinatarios/${encodeURIComponent(stagingPhone)}/${agenciaID}`)
+    apiClient.get(`${ENDPOINTS.IMPORT_CONTACT}/GetDestinatarios/${encodeURIComponent(pendingPhone)}/${agenciaID}`)
       .then(r => {
         const d = r.data?.data ?? r.data ?? [];
         setStagingDestinatarios(Array.isArray(d) ? d : []);
       })
       .catch(() => setStagingDestinatarios([]))
       .finally(() => setStagingLoading(false));
-  }, [stagingPhone, user?.agenciaId]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [pendingPhone, user?.agenciaId]);
 
   const handleActivateStagingDestinatario = useCallback(async (sd) => {
     setActivating(true);
@@ -925,7 +933,7 @@ export default function DestinatarioSection({
       // 2. Create address + mark processed (server resolves MunicipioID by name)
       const activateRes = await apiClient.post(`${ENDPOINTS.IMPORT_CONTACT}/ActivateDestinatario`, {
         destinatarioID,
-        remitenteTelefono:   stagingPhone,
+        remitenteTelefono:   pendingPhone,
         destinatarioName:    sd.destinatarioName,
         destinatarioLastName: sd.destinatarioLastName,
         agenciaID,
@@ -971,15 +979,16 @@ export default function DestinatarioSection({
       setAddresses([newAddress]);
       onAddressChange(newAddress);
       setInputValue([sd.destinatarioName, sd.destinatarioLastName].filter(Boolean).join(' '));
-      setStagingDestinatarios([]);
+      // Remove just the activated one -- other pending imports for this remitente,
+      // if any, stay visible instead of the whole list being wiped.
+      setStagingDestinatarios(prev => prev.filter(x => x !== sd));
       if (onStagingCleared) onStagingCleared();
     } catch (err) {
-      // eslint-disable-next-line no-console
       console.error('Error activating staging destinatario:', err);
     } finally {
       setActivating(false);
     }
-  }, [stagingPhone, user, onChange, onAddressChange, onStagingCleared]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [pendingPhone, user, onChange, onAddressChange, onStagingCleared]);
 
   return (
     <Paper variant="outlined" sx={{ p: 2 }}>
@@ -1083,22 +1092,23 @@ export default function DestinatarioSection({
         </Box>
       )}
 
-      {/* ── Staging destinatario picker ── */}
-      {stagingPhone && !value && (
+      {/* ── Pending imported destinatarios for this remitente ──
+          Visible whenever there are pending rows (or the check is still loading),
+          regardless of whether a destinatario has already been picked -- so staff
+          can catch a second/third imported destinatario that never got activated. */}
+      {pendingPhone && (stagingLoading || activating || stagingDestinatarios.length > 0) && (
         <Box sx={{ mb: 1.5 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
             <ArchiveIcon fontSize="small" color="warning" />
             <Typography variant="caption" fontWeight={600} color="warning.dark">
-              DESTINATARIOS IMPORTADOS
+              DESTINATARIOS IMPORTADOS PENDIENTES
             </Typography>
-            <Chip label="Del importador" size="small" color="warning" variant="outlined" sx={{ ml: 'auto' }} />
+            {!stagingLoading && (
+              <Chip label={stagingDestinatarios.length} size="small" color="warning" sx={{ ml: 'auto' }} />
+            )}
           </Box>
           {stagingLoading || activating ? (
             <CircularProgress size={16} />
-          ) : stagingDestinatarios.length === 0 ? (
-            <Typography variant="body2" color="text.secondary" sx={{ py: 0.5 }}>
-              No hay destinatarios importados para este remitente.
-            </Typography>
           ) : (
             <List dense disablePadding sx={{ border: '1px solid', borderColor: 'warning.light', borderRadius: 1, bgcolor: 'warning.50' }}>
               {stagingDestinatarios.map((sd, i) => (
