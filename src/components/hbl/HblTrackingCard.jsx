@@ -52,13 +52,23 @@ export default function HblTrackingCard({ compact = false, initialQuery = '' }) 
 
   const query = search.trim();
 
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ['hbl-tracking', query],
+  // Debounce the actual search: this is a public, unauthenticated, rate-limited
+  // endpoint (10 req/5min/IP), and without this a single typed phone number
+  // fires one request per keystroke, easily exhausting the quota and surfacing
+  // as a confusing "check your connection" error mid-typing.
+  const [debouncedQuery, setDebouncedQuery] = useState(query);
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedQuery(query), 450);
+    return () => clearTimeout(t);
+  }, [query]);
+
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ['hbl-tracking', debouncedQuery],
     queryFn: async () => {
-      const res = await apiClient.get(ENDPOINTS.HBL_TRACKING(query));
+      const res = await apiClient.get(ENDPOINTS.HBL_TRACKING(debouncedQuery));
       return Array.isArray(res.data) ? res.data : res.data?.data ?? [];
     },
-    enabled: query.length >= 3,
+    enabled: debouncedQuery.length >= 3,
     staleTime: 0,
   });
 
@@ -100,10 +110,16 @@ export default function HblTrackingCard({ compact = false, initialQuery = '' }) 
         </Box>
       )}
 
-      {isError && <Alert severity="error">Error al buscar. Verifique su conexión.</Alert>}
+      {isError && (
+        <Alert severity="error">
+          {error?.status === 429
+            ? 'Demasiadas búsquedas seguidas. Espere un momento e intente de nuevo.'
+            : 'Error al buscar. Verifique su conexión.'}
+        </Alert>
+      )}
 
-      {!isLoading && query.length >= 3 && results.length === 0 && (
-        <Typography variant="body2" color="text.secondary">No se encontraron envíos para "{query}".</Typography>
+      {!isLoading && debouncedQuery.length >= 3 && results.length === 0 && (
+        <Typography variant="body2" color="text.secondary">No se encontraron envíos para "{debouncedQuery}".</Typography>
       )}
 
       {results.length > 0 && (
