@@ -5,6 +5,7 @@ import {
   Stack, Divider,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { useQuery } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import apiClient from '../../api/apiClient';
@@ -43,6 +44,15 @@ function formatHaceTiempo(fecha) {
   return `${dias} días`;
 }
 
+// Hides old, already-delivered shipments from the default mobile list.
+// deliveryDate is set server-side the moment hblStatus actually becomes
+// Entregado (via sp_<carrier>hbl_updatestatus) and stays null until then.
+function isOldDelivered(r) {
+  if (getHblEstadoLabel(r.hblStatus).label !== 'Entregado') return false;
+  if (!r.deliveryDate) return false;
+  return dayjs().diff(dayjs(r.deliveryDate), 'day') > 30;
+}
+
 export default function HblTrackingCard({ compact = false, initialQuery = '' }) {
   const [search, setSearch] = useState(initialQuery);
 
@@ -73,6 +83,20 @@ export default function HblTrackingCard({ compact = false, initialQuery = '' }) 
   });
 
   const results = data ?? [];
+
+  // Mobile card list: collapsed-by-default cards, with old delivered shipments
+  // hidden until "Ver todos" is tapped.
+  const [expandedIds, setExpandedIds] = useState(new Set());
+  const [showAllMobile, setShowAllMobile] = useState(false);
+  const toggleExpanded = (key) => {
+    setExpandedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key); else next.add(key);
+      return next;
+    });
+  };
+  const mobileResults = showAllMobile ? results : results.filter((r) => !isOldDelivered(r));
+  const hiddenOldCount = results.length - mobileResults.length;
 
   return (
     <Box>
@@ -124,41 +148,71 @@ export default function HblTrackingCard({ compact = false, initialQuery = '' }) 
 
       {results.length > 0 && (
         <>
-          {/* Mobile / narrow: stacked cards */}
+          {/* Mobile / narrow: collapsed-by-default cards */}
           <Stack spacing={1.5} sx={{ display: { xs: 'flex', md: 'none' } }}>
-            {results.map((r) => {
+            {mobileResults.map((r) => {
+              const key = `${r.hblType}-${r.hblid}`;
               const estado = getHblEstadoLabel(r.hblStatus);
+              const isExpanded = expandedIds.has(key);
               return (
-                <Paper key={`${r.hblType}-${r.hblid}`} variant="outlined" sx={{ p: 2 }}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                    <Chip label={CARRIER_LABELS[r.hblType] || r.hblType} size="small" variant="outlined" />
-                    <Chip label={estado.label} color={estado.color} size="small" />
+                <Paper key={key} variant="outlined" sx={{ p: 2 }}>
+                  <Box
+                    onClick={() => toggleExpanded(key)}
+                    sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', gap: 1 }}
+                  >
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 0 }}>
+                      <Chip label={CARRIER_LABELS[r.hblType] || r.hblType} size="small" variant="outlined" />
+                      <Typography variant="subtitle2" fontWeight={700} noWrap>{r.numero}</Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flexShrink: 0 }}>
+                      <Chip label={estado.label} color={estado.color} size="small" />
+                      <ChevronRightIcon
+                        fontSize="small"
+                        sx={{ color: 'text.secondary', transform: isExpanded ? 'rotate(90deg)' : 'none', transition: 'transform 0.15s' }}
+                      />
+                    </Box>
                   </Box>
-                  <Typography variant="subtitle2" fontWeight={700}>
-                    {r.numero} {r.envio ? `— ${r.envio}` : ''}
-                  </Typography>
-                  <Divider sx={{ my: 1 }} />
-                  <Typography variant="caption" color="text.secondary" display="block">Remitente</Typography>
-                  <Typography variant="body2">
-                    {[r.remitenteName, r.remitenteLastName].filter(Boolean).join(' ') || '—'}
-                    {r.remitenteTelefono && ` · ${r.remitenteTelefono}`}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary" display="block" sx={{ mt: 1 }}>Destinatario</Typography>
-                  <Typography variant="body2">
-                    {[r.destinatarioName, r.destinatarioLastName].filter(Boolean).join(' ') || '—'}
-                  </Typography>
-                  {r.bultoDescriptions && (
+
+                  {isExpanded && (
                     <>
-                      <Typography variant="caption" color="text.secondary" display="block" sx={{ mt: 1 }}>Productos</Typography>
-                      <Typography variant="body2">{r.bultoDescriptions}</Typography>
+                      <Divider sx={{ my: 1 }} />
+                      {r.envio && (
+                        <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>Envío: {r.envio}</Typography>
+                      )}
+                      <Typography variant="caption" color="text.secondary" display="block">Remitente</Typography>
+                      <Typography variant="body2">
+                        {[r.remitenteName, r.remitenteLastName].filter(Boolean).join(' ') || '—'}
+                        {r.remitenteTelefono && ` · ${r.remitenteTelefono}`}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary" display="block" sx={{ mt: 1 }}>Destinatario</Typography>
+                      <Typography variant="body2">
+                        {[r.destinatarioName, r.destinatarioLastName].filter(Boolean).join(' ') || '—'}
+                      </Typography>
+                      {r.bultoDescriptions && (
+                        <>
+                          <Typography variant="caption" color="text.secondary" display="block" sx={{ mt: 1 }}>Productos</Typography>
+                          <Typography variant="body2">{r.bultoDescriptions}</Typography>
+                        </>
+                      )}
+                      <Typography variant="caption" color="text.secondary" display="block" sx={{ mt: 1 }}>
+                        Hace {formatHaceTiempo(r.fecha)}
+                      </Typography>
                     </>
                   )}
-                  <Typography variant="caption" color="text.secondary" display="block" sx={{ mt: 1 }}>
-                    Hace {formatHaceTiempo(r.fecha)}
-                  </Typography>
                 </Paper>
               );
             })}
+
+            {!showAllMobile && hiddenOldCount > 0 && (
+              <Typography
+                variant="body2"
+                color="primary"
+                onClick={() => setShowAllMobile(true)}
+                sx={{ textAlign: 'center', py: 1, cursor: 'pointer', fontWeight: 600 }}
+              >
+                Ver todos los envíos ({hiddenOldCount} entregado{hiddenOldCount === 1 ? '' : 's'} hace más de un mes oculto{hiddenOldCount === 1 ? '' : 's'})
+              </Typography>
+            )}
           </Stack>
 
           {/* Desktop: table */}
